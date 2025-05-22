@@ -27,7 +27,7 @@ class MainView extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _leftPanel(iMat),
+                _leftPanel(context, iMat),
                 Container(
                   width: 580,
                   //height: 400,
@@ -63,10 +63,10 @@ class MainView extends StatelessWidget {
     );
   }
 
-  Container _leftPanel(ImatDataHandler iMat) {
+  Container _leftPanel(BuildContext context, ImatDataHandler iMat) {
     return Container(
       width: 300,
-      color: const Color.fromARGB(255, 154, 172, 134),
+      color: Theme.of(context).colorScheme.primaryContainer,
       child: Column(
         children: [
           SizedBox(height: AppTheme.paddingSmall),

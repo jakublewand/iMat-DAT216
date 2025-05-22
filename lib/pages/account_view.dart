@@ -17,7 +17,7 @@ class AccountView extends StatelessWidget {
             children: [
               AppNavbar(),
               SizedBox(height: AppTheme.paddingMedium),
-              _customerDetails(),
+              _customerDetails(context),
             ],
           ),
         ),
@@ -25,22 +25,20 @@ class AccountView extends StatelessWidget {
     );
   }
 
-
-
-  Widget _customerDetails() {
+  Widget _customerDetails(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
           child: Container(
-            color: Color.fromARGB(255, 154, 172, 134),
+            color: Theme.of(context).colorScheme.primaryContainer,
             child: CustomerDetails(),
           ),
         ),
         SizedBox(width: 16),
         Expanded(
           child: Container(
-            color: Color.fromARGB(255, 154, 172, 134),
+            color: Theme.of(context).colorScheme.primaryContainer,
             child: CardDetails(),
           ),
         ),
