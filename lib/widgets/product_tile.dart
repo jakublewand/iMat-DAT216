@@ -3,6 +3,7 @@ import 'package:imat/model/imat/product_detail.dart';
 import 'package:imat/model/imat/shopping_item.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/widgets/buy_button.dart';
+import 'package:imat/widgets/product_lightbox.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,6 +18,9 @@ class ProductTile extends StatelessWidget {
 
     return Card(
       child: ListTile(
+        onTap: () {
+          ProductLightbox.show(context, product);
+        },
         leading: iMat.getImage(product),
         title: Text(product.name),
         subtitle: Text(

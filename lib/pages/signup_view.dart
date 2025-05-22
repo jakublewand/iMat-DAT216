@@ -1,0 +1,77 @@
+import 'package:imat/app_theme.dart';
+import 'package:flutter/material.dart';
+
+class SignUpView extends StatelessWidget {
+  const SignUpView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(AppTheme.paddingMedium),
+          child: Column(
+            children: [
+              _header(context),
+              SizedBox(height: AppTheme.paddingLarge),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Registrera konto',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      SizedBox(height: AppTheme.paddingMedium),
+                      Text(
+                        'Placeholder för registrering',
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      SizedBox(height: AppTheme.paddingLarge),
+                      _flowButtons(context),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _header(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('iMat'),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Tillbaka'),
+        ),
+      ],
+    );
+  }
+
+  Widget _flowButtons(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            // Placeholder för registrering
+          },
+          child: Text('Registrera'),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Redan medlem? Logga in'),
+        ),
+      ],
+    );
+  }
+} 

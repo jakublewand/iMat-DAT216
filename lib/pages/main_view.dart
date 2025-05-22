@@ -3,7 +3,9 @@ import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat/util/functions.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/pages/account_view.dart';
+import 'package:imat/pages/checkout_view.dart';
 import 'package:imat/pages/history_view.dart';
+import 'package:imat/pages/login_view.dart';
 import 'package:imat/widgets/cart_view.dart';
 import 'package:imat/widgets/product_tile.dart';
 import 'package:flutter/material.dart';
@@ -47,17 +49,19 @@ class MainView extends StatelessWidget {
   }
 
   Widget _shoppingCart(ImatDataHandler iMat) {
-    return Column(
-      children: [
-        Text('Kundvagn'),
-        Container(height: 600, child: CartView()),
-        ElevatedButton(
-          onPressed: () {
-            iMat.placeOrder();
-          },
-          child: Text('Köp!'),
-        ),
-      ],
+    return Builder(
+      builder: (context) => Column(
+        children: [
+          Text('Kundvagn'),
+          Container(height: 600, child: CartView()),
+          ElevatedButton(
+            onPressed: () {
+              _showCheckout(context);
+            },
+            child: Text('Till kassan'),
+          ),
+        ],
+      ),
     );
   }
 
@@ -143,6 +147,12 @@ class MainView extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
+                _showLogin(context);
+              },
+              child: Text('Logga in'),
+            ),
+            ElevatedButton(
+              onPressed: () {
                 dbugPrint('Historik-knapp');
                 _showHistory(context);
               },
@@ -182,6 +192,20 @@ class MainView extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => HistoryView()),
+    );
+  }
+
+  void _showLogin(context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoginView()),
+    );
+  }
+
+  void _showCheckout(context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CheckoutView()),
     );
   }
 }
