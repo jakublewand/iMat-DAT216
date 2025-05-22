@@ -1,5 +1,6 @@
 import 'package:imat/app_theme.dart';
 import 'package:imat/pages/checkout_success_view.dart';
+import 'package:imat/widgets/app_navbar.dart';
 import 'package:flutter/material.dart';
 
 class CheckoutView extends StatelessWidget {
@@ -13,7 +14,7 @@ class CheckoutView extends StatelessWidget {
           padding: const EdgeInsets.all(AppTheme.paddingMedium),
           child: Column(
             children: [
-              _header(context),
+              AppNavbar(),
               SizedBox(height: AppTheme.paddingLarge),
               Expanded(
                 child: Center(
@@ -39,22 +40,6 @@ class CheckoutView extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _header(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('iMat'),
-        ),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('Tillbaka'),
-        ),
-      ],
     );
   }
 

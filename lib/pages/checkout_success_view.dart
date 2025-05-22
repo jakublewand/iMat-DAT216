@@ -1,5 +1,4 @@
-import 'package:imat/app_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:imat/app_theme.dart';import 'package:imat/widgets/app_navbar.dart';import 'package:flutter/material.dart';
 
 class CheckoutSuccessView extends StatelessWidget {
   const CheckoutSuccessView({super.key});
@@ -12,7 +11,7 @@ class CheckoutSuccessView extends StatelessWidget {
           padding: const EdgeInsets.all(AppTheme.paddingMedium),
           child: Column(
             children: [
-              _header(context),
+              AppNavbar(),
               SizedBox(height: AppTheme.paddingLarge),
               Expanded(
                 child: Center(
@@ -48,21 +47,7 @@ class CheckoutSuccessView extends StatelessWidget {
     );
   }
 
-  Widget _header(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('iMat'),
-        ),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('Tillbaka'),
-        ),
-      ],
-    );
-  }
+  
 
   Widget _flowButtons(BuildContext context) {
     return Row(

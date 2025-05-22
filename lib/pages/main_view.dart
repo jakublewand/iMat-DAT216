@@ -2,10 +2,8 @@ import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat/util/functions.dart';
 import 'package:imat/model/imat_data_handler.dart';
-import 'package:imat/pages/account_view.dart';
 import 'package:imat/pages/checkout_view.dart';
-import 'package:imat/pages/history_view.dart';
-import 'package:imat/pages/login_view.dart';
+import 'package:imat/widgets/app_navbar.dart';
 import 'package:imat/widgets/cart_view.dart';
 import 'package:imat/widgets/product_tile.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +21,7 @@ class MainView extends StatelessWidget {
       body: Column(
         children: [
           SizedBox(height: AppTheme.paddingLarge),
-          _header(context),
+          AppNavbar(),
           SizedBox(height: AppTheme.paddingMedium),
           Expanded(
             child: Row(
@@ -138,37 +136,7 @@ class MainView extends StatelessWidget {
     );
   }
 
-  Row _header(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        ElevatedButton(onPressed: () {}, child: Text('iMat')),
-        Row(
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                _showLogin(context);
-              },
-              child: Text('Logga in'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                dbugPrint('Historik-knapp');
-                _showHistory(context);
-              },
-              child: Text('Köphistorik'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                _showAccount(context);
-              },
-              child: Text('Användare'),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+
 
   Widget _centerStage(BuildContext context, List<Product> products) {
     // ListView.builder has the advantage that tiles
@@ -178,27 +146,6 @@ class MainView extends StatelessWidget {
       itemBuilder: (BuildContext context, int index) {
         return ProductTile(products[index]);
       },
-    );
-  }
-
-  void _showAccount(context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AccountView()),
-    );
-  }
-
-  void _showHistory(context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => HistoryView()),
-    );
-  }
-
-  void _showLogin(context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LoginView()),
     );
   }
 

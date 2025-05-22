@@ -169,6 +169,21 @@ class ImatDataHandler extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Kontrollerar om användaren är inloggad
+  bool get isLoggedIn => _user.userName.isNotEmpty;
+
+  // Loggar ut användaren
+  void logout() {
+    _user = User('', '');
+    notifyListeners();
+  }
+
+  // Loggar in användaren (placeholder för riktigt login)
+  void login(String username, String password) {
+    _user = User(username, password);
+    notifyListeners();
+  }
+
   // Returnerar ProductDetail för produkten p
   // eller null om information saknas
   ProductDetail? getDetail(Product p) {

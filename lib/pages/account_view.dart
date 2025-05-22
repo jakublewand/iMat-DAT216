@@ -1,4 +1,5 @@
 import 'package:imat/app_theme.dart';
+import 'package:imat/widgets/app_navbar.dart';
 import 'package:imat/widgets/card_details.dart';
 import 'package:imat/widgets/customer_details.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class AccountView extends StatelessWidget {
           padding: const EdgeInsets.all(AppTheme.paddingMedium),
           child: Column(
             children: [
-              _header(context),
+              AppNavbar(),
               SizedBox(height: AppTheme.paddingMedium),
               _customerDetails(),
             ],
@@ -24,21 +25,7 @@ class AccountView extends StatelessWidget {
     );
   }
 
-  Widget _header(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('iMat'),
-        ),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('Tillbaka'),
-        ),
-      ],
-    );
-  }
+
 
   Widget _customerDetails() {
     return Row(

@@ -1,6 +1,9 @@
 import 'package:imat/app_theme.dart';
+import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/pages/signup_view.dart';
+import 'package:imat/widgets/app_navbar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
@@ -13,7 +16,7 @@ class LoginView extends StatelessWidget {
           padding: const EdgeInsets.all(AppTheme.paddingMedium),
           child: Column(
             children: [
-              _header(context),
+              AppNavbar(),
               SizedBox(height: AppTheme.paddingLarge),
               Expanded(
                 child: Center(
@@ -42,29 +45,17 @@ class LoginView extends StatelessWidget {
     );
   }
 
-  Widget _header(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('iMat'),
-        ),
-        ElevatedButton(
-          onPressed: () => Navigator.pop(context),
-          child: Text('Tillbaka'),
-        ),
-      ],
-    );
-  }
-
   Widget _flowButtons(BuildContext context) {
+    var iMat = Provider.of<ImatDataHandler>(context, listen: false);
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         ElevatedButton(
           onPressed: () {
-            // Placeholder för inloggning
+            // Placeholder för riktigt login - simulerar inloggning
+            iMat.login('testanvändare', 'lösenord');
+            Navigator.pop(context);
           },
           child: Text('Logga in'),
         ),

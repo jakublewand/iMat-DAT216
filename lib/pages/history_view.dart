@@ -1,6 +1,7 @@
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/order.dart';
 import 'package:imat/model/imat_data_handler.dart';
+import 'package:imat/widgets/app_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +33,7 @@ class _HistoryViewState extends State<HistoryView> {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(height: AppTheme.paddingLarge),
-          _header(context),
+          AppNavbar(),
           Expanded(
             child: Row(
               children: [
@@ -58,25 +59,7 @@ class _HistoryViewState extends State<HistoryView> {
     );
   }
 
-  Widget _header(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('iMat'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: Text('Tillbaka'),
-        ),
-      ],
-    );
-  }
+
 
   Widget _ordersList(BuildContext context, List<Order> orders, Function onTap) {
     return ListView(
