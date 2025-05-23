@@ -1,12 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
-import 'package:imat/model/imat/util/functions.dart';
 import 'package:imat/model/imat_data_handler.dart';
-import 'package:imat/pages/checkout_view.dart';
-import 'package:imat/widgets/app_navbar.dart';
-import 'package:imat/widgets/cart_view.dart';
-import 'package:imat/widgets/product_tile.dart';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MainView extends StatelessWidget {
@@ -19,25 +14,45 @@ class MainView extends StatelessWidget {
 
     return Scaffold(
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(height: AppTheme.paddingLarge),
-          AppNavbar(),
-          SizedBox(height: AppTheme.paddingMedium),
+          _buildAppBar(context),
+          _buildWelcomeHeader(),
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _leftPanel(context, iMat),
-                Container(
-                  width: 580,
-                  //height: 400,
-                  child: _centerStage(context, products),
+                Expanded(
+                  child: Column(
+                    children: [
+                      _buildCategories(context),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          padding: EdgeInsets.all(AppTheme.paddingMedium),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Erbjudanden',
+                                style: Theme.of(context).textTheme.headlineMedium,
+                              ),
+                              SizedBox(height: AppTheme.paddingMedium),
+                              _buildProductGrid(context, products.take(8).toList()),
+                              SizedBox(height: AppTheme.paddingLarge),
+                              Text(
+                                'Produkter',
+                                style: Theme.of(context).textTheme.headlineMedium,
+                              ),
+                              SizedBox(height: AppTheme.paddingMedium),
+                              _buildProductGrid(context, products.skip(8).take(8).toList()),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                Container(
-                  width: 300,
-                  //color: Colors.blueGrey,
-                  child: _shoppingCart(iMat),
-                ),
+                _buildCart(context),
               ],
             ),
           ),
@@ -46,113 +61,268 @@ class MainView extends StatelessWidget {
     );
   }
 
-  Widget _shoppingCart(ImatDataHandler iMat) {
-    return Builder(
-      builder: (context) => Column(
-        children: [
-          Text('Kundvagn'),
-          Container(height: 600, child: CartView()),
-          ElevatedButton(
-            onPressed: () {
-              _showCheckout(context);
-            },
-            child: Text('Till kassan'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Container _leftPanel(BuildContext context, ImatDataHandler iMat) {
+  Widget _buildAppBar(BuildContext context) {
     return Container(
-      width: 300,
-      color: Theme.of(context).colorScheme.primaryContainer,
-      child: Column(
+      padding: EdgeInsets.all(AppTheme.paddingMedium),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
         children: [
-          SizedBox(height: AppTheme.paddingSmall),
-          SizedBox(
-            width: 132,
-            child: ElevatedButton(
-              onPressed: () {
-                iMat.selectAllProducts();
-              },
-              child: Text('Visa allt'),
+          Text(
+            'IMat',
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
           ),
-          SizedBox(height: AppTheme.paddingSmall),
-          SizedBox(
-            width: 132,
-            child: ElevatedButton(
-              onPressed: () {
-                //print('Favoriter');
-                iMat.selectFavorites();
-              },
-              child: Text('Favoriter'),
+          SizedBox(width: AppTheme.paddingLarge),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Sök',
+                  prefixIcon: Icon(Icons.search),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                ),
+                onChanged: (value) {
+                  if (value.isEmpty) {
+                    context.read<ImatDataHandler>().selectAllProducts();
+                  } else {
+                    var searchResults = context.read<ImatDataHandler>().findProducts(value);
+                    context.read<ImatDataHandler>().selectSelection(searchResults);
+                  }
+                },
+              ),
             ),
           ),
-          SizedBox(height: AppTheme.paddingSmall),
-          SizedBox(
-            width: 132,
-            child: ElevatedButton(
-              onPressed: () {
-                var products = iMat.products;
-                iMat.selectSelection([
-                  products[4],
-                  products[45],
-                  products[68],
-                  products[102],
-                  products[110],
-                ]);
-              },
-              child: Text('Urval'),
-            ),
-          ),
-          SizedBox(height: AppTheme.paddingSmall),
-          SizedBox(
-            width: 132,
-            child: ElevatedButton(
-              onPressed: () {
-                //print('Frukt');
-                iMat.selectSelection(
-                  iMat.findProductsByCategory(ProductCategory.CABBAGE),
-                );
-              },
-              child: Text('Grönsaker'),
-            ),
-          ),
-          SizedBox(height: AppTheme.paddingSmall),
-          SizedBox(
-            width: 132,
-            child: ElevatedButton(
-              onPressed: () {
-                //print('Söktest');
-                iMat.selectSelection(iMat.findProducts('mj'));
-              },
-              child: Text('Söktest'),
-            ),
+          SizedBox(width: AppTheme.paddingLarge),
+          IconButton(
+            icon: Icon(Icons.person),
+            onPressed: () {},
           ),
         ],
       ),
     );
   }
 
+  Widget _buildWelcomeHeader() {
+    return Container(
+      padding: EdgeInsets.all(AppTheme.paddingLarge),
+      color: AppTheme.colorScheme.primary,
+      child: Text(
+        'Välkommen Kerstin!',
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
 
+  Widget _buildCategories(BuildContext context) {
+    final categories = [
+      MapEntry('Alla kategorier', null),
+      MapEntry('Exotiska Frukter', ProductCategory.EXOTIC_FRUIT),
+      MapEntry('Citrusfrukter', ProductCategory.CITRUS_FRUIT),
+      MapEntry('Bär', ProductCategory.BERRY),
+      MapEntry('Bröd', ProductCategory.BREAD),
+      MapEntry('Kål', ProductCategory.CABBAGE),
+      MapEntry('Kalla Drycker', ProductCategory.COLD_DRINKS),
+      MapEntry('Mejeri', ProductCategory.DAIRIES),
+      MapEntry('Frukter', ProductCategory.FRUIT),
+    ];
 
-  Widget _centerStage(BuildContext context, List<Product> products) {
-    // ListView.builder has the advantage that tiles
-    // are built as needed.
-    return ListView.builder(
+    return Container(
+      padding: EdgeInsets.symmetric(
+        vertical: AppTheme.paddingMedium,
+        horizontal: AppTheme.paddingLarge,
+      ),
+      child: Wrap(
+        spacing: AppTheme.paddingSmall,
+        runSpacing: AppTheme.paddingSmall,
+        children: categories.map((category) {
+          return FilterChip(
+            label: Text(category.key),
+            selected: context.watch<ImatDataHandler>().selectProducts == 
+                     (category.value == null ? 
+                      context.read<ImatDataHandler>().products : 
+                      context.read<ImatDataHandler>().findProductsByCategory(category.value!)),
+            onSelected: (bool selected) {
+              if (selected) {
+                if (category.value == null) {
+                  context.read<ImatDataHandler>().selectAllProducts();
+                } else {
+                  var categoryProducts = context.read<ImatDataHandler>().findProductsByCategory(category.value!);
+                  context.read<ImatDataHandler>().selectSelection(categoryProducts);
+                }
+              }
+            },
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  Widget _buildProductGrid(BuildContext context, List<Product> products) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
+        childAspectRatio: 0.8,
+        crossAxisSpacing: AppTheme.paddingMedium,
+        mainAxisSpacing: AppTheme.paddingMedium,
+      ),
       itemCount: products.length,
-      itemBuilder: (BuildContext context, int index) {
-        return ProductTile(products[index]);
+      itemBuilder: (context, index) {
+        final product = products[index];
+        return Card(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Stack(
+                  children: [
+                    context.read<ImatDataHandler>().getImage(product),
+                    if (product.isEcological)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.green,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Icon(
+                            Icons.eco,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(AppTheme.paddingSmall),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      product.name,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    Text(
+                      '${product.price} kr per ${product.unit}',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    SizedBox(height: AppTheme.paddingSmall),
+                    Row(
+                      children: [
+                        Text(
+                          '${product.price} kr',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Spacer(),
+                        ElevatedButton.icon(
+                          onPressed: () {},
+                          icon: Icon(Icons.add),
+                          label: Text('Köp'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.colorScheme.primary,
+                            foregroundColor: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
       },
     );
   }
 
-  void _showCheckout(context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CheckoutView()),
+  Widget _buildCart(BuildContext context) {
+    return Container(
+      width: 300,
+      decoration: BoxDecoration(
+        border: Border(
+          left: BorderSide(
+            color: Colors.grey[300]!,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: EdgeInsets.all(AppTheme.paddingMedium),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Colors.grey[300]!,
+                  width: 1,
+                ),
+              ),
+            ),
+            child: Text(
+              'Varukorg',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+          ),
+          Expanded(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.shopping_cart_outlined,
+                    size: 48,
+                    color: Colors.grey[400],
+                  ),
+                  SizedBox(height: AppTheme.paddingMedium),
+                  Text(
+                    'Inga varor i varukorgen än!',
+                    style: TextStyle(
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(AppTheme.paddingMedium),
+            child: ElevatedButton(
+              onPressed: () {},
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.colorScheme.primary,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: AppTheme.paddingMedium),
+              ),
+              child: Text('Till kassan'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
