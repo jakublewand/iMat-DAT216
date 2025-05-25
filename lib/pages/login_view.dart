@@ -4,21 +4,21 @@ import 'package:imat/pages/signup_view.dart';
 import 'package:imat/widgets/app_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:imat/widgets/page_scaffold.dart';
+
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppTheme.paddingMedium),
-          child: Column(
-            children: [
-              AppNavbar(),
-              SizedBox(height: AppTheme.paddingLarge),
-              Expanded(
+    return PageScaffold(
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.paddingMedium),
+        child: Column(
+          children: [
+            SizedBox(height: AppTheme.paddingLarge),
+            Expanded(
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -37,9 +37,8 @@ class LoginView extends StatelessWidget {
                     ],
                   ),
                 ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

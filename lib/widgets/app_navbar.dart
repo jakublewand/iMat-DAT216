@@ -1,8 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/pages/account_view.dart';
 import 'package:imat/pages/history_view.dart';
 import 'package:imat/pages/login_view.dart';
-import 'package:flutter/material.dart';
+import 'package:imat/pages/main_view.dart';
 import 'package:provider/provider.dart';
 
 class AppNavbar extends StatelessWidget {
@@ -12,72 +14,99 @@ class AppNavbar extends StatelessWidget {
   Widget build(BuildContext context) {
     var iMat = context.watch<ImatDataHandler>();
     
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        // iMat logo - always visible
-        ElevatedButton(
-          onPressed: () {
-            // Navigate to main if not already there
-            Navigator.popUntil(context, (route) => route.isFirst);
-          },
-          child: Text('iMat'),
-        ),
-        
-        // Right side buttons - different based on login status
-        Row(
-          children: iMat.isLoggedIn ? _loggedInButtons(context, iMat) : _loggedOutButtons(context),
-        ),
-      ],
+    return Container(
+      padding: EdgeInsets.all(AppTheme.paddingMedium),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          InkWell(
+            onTap: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => MainView()),
+              );
+            },
+            child: Text(
+              'iMat',
+              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          SizedBox(width: AppTheme.paddingLarge),
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Sök',
+                  prefixIcon: Icon(Icons.search),
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
+                ),
+                onChanged: (value) {
+                  if (value.isEmpty) {
+                    context.read<ImatDataHandler>().selectAllProducts();
+                  } else {
+                    var searchResults = context.read<ImatDataHandler>().findProducts(value);
+                    context.read<ImatDataHandler>().selectSelection(searchResults);
+                  }
+                },
+              ),
+            ),
+          ),
+          SizedBox(width: AppTheme.paddingLarge),
+          ...iMat.isLoggedIn ? _loggedInButtons(context, iMat) : _loggedOutButtons(context),
+        ],
+      ),
     );
   }
 
-  // Buttons shown when user is logged in
   List<Widget> _loggedInButtons(BuildContext context, ImatDataHandler iMat) {
     return [
       ElevatedButton(
-        onPressed: () {
-          _showHistory(context);
-        },
+        onPressed: () => _showHistory(context),
         child: Text('Köphistorik'),
       ),
       SizedBox(width: 8),
       ElevatedButton(
-        onPressed: () {
-          _showAccount(context);
-        },
+        onPressed: () => _showAccount(context),
         child: Text('Min profil'),
       ),
       SizedBox(width: 8),
       ElevatedButton(
-        onPressed: () {
-          _logout(context, iMat);
-        },
+        onPressed: () => _logout(context, iMat),
         child: Text('Logga ut'),
       ),
     ];
   }
 
-  // Buttons shown when user is not logged in
   List<Widget> _loggedOutButtons(BuildContext context) {
     return [
       ElevatedButton(
-        onPressed: () {
-          _showLogin(context);
-        },
+        onPressed: () => _showLogin(context),
         child: Text('Logga in'),
       ),
       SizedBox(width: 8),
       ElevatedButton(
-        onPressed: () {
-          _showLogin(context);
-        },
+        onPressed: () => _showLogin(context),
         child: Text('Registrera'),
       ),
     ];
   }
 
-  // Navigation methods
   void _showLogin(BuildContext context) {
     Navigator.push(
       context,
@@ -100,7 +129,6 @@ class AppNavbar extends StatelessWidget {
   }
 
   void _logout(BuildContext context, ImatDataHandler iMat) {
-    // Show confirmation dialog
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -115,8 +143,8 @@ class AppNavbar extends StatelessWidget {
             TextButton(
               onPressed: () {
                 iMat.logout();
-                Navigator.pop(context); // Close dialog
-                Navigator.popUntil(context, (route) => route.isFirst); // Go to main
+                Navigator.pop(context);
+                Navigator.popUntil(context, (route) => route.isFirst);
               },
               child: Text('Logga ut'),
             ),
@@ -125,4 +153,4 @@ class AppNavbar extends StatelessWidget {
       },
     );
   }
-} 
+}

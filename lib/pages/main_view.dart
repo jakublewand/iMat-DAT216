@@ -3,6 +3,12 @@ import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:provider/provider.dart';
+import 'package:imat/pages/login_view.dart';
+import 'package:imat/model/imat/shopping_item.dart';
+import 'dart:math';
+import 'package:imat/pages/checkout_view.dart';
+import 'package:imat/widgets/page_scaffold.dart';
+
 
 class MainView extends StatelessWidget {
   const MainView({super.key});
@@ -12,11 +18,10 @@ class MainView extends StatelessWidget {
     var iMat = context.watch<ImatDataHandler>();
     var products = iMat.selectProducts;
 
-    return Scaffold(
-      body: Column(
+    return PageScaffold(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildAppBar(context),
           _buildWelcomeHeader(),
           Expanded(
             child: Row(
@@ -77,7 +82,7 @@ class MainView extends StatelessWidget {
       child: Row(
         children: [
           Text(
-            'IMat',
+            'iMat',
             style: Theme.of(context).textTheme.headlineLarge?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -110,7 +115,12 @@ class MainView extends StatelessWidget {
           SizedBox(width: AppTheme.paddingLarge),
           IconButton(
             icon: Icon(Icons.person),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginView()),
+              );
+            },
           ),
         ],
       ),
@@ -239,7 +249,11 @@ class MainView extends StatelessWidget {
                         ),
                         Spacer(),
                         ElevatedButton.icon(
-                          onPressed: () {},
+                          onPressed: () {
+                            context.read<ImatDataHandler>().shoppingCartAdd(
+                              ShoppingItem(product, amount: 1)
+                            );
+                          },
                           icon: Icon(Icons.add),
                           label: Text('Köp'),
                           style: ElevatedButton.styleFrom(
@@ -260,8 +274,11 @@ class MainView extends StatelessWidget {
   }
 
   Widget _buildCart(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final minWidth = max(350.0, screenWidth * 0.25);
+
     return Container(
-      width: 300,
+      width: minWidth,
       decoration: BoxDecoration(
         border: Border(
           left: BorderSide(
@@ -288,31 +305,154 @@ class MainView extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.shopping_cart_outlined,
-                    size: 48,
-                    color: Colors.grey[400],
-                  ),
-                  SizedBox(height: AppTheme.paddingMedium),
-                  Text(
-                    'Inga varor i varukorgen än!',
-                    style: TextStyle(
-                      color: Colors.grey[600],
+          Consumer<ImatDataHandler>(
+            builder: (context, iMat, child) {
+              final cart = iMat.getShoppingCart();
+              if (cart.items.isEmpty) {
+                return Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.shopping_cart_outlined,
+                          size: 48,
+                          color: Colors.grey[400],
+                        ),
+                        SizedBox(height: AppTheme.paddingMedium),
+                        Text(
+                          'Inga varor i varukorgen än!',
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                );
+              }
+              return Expanded(
+                child: ListView.builder(
+                  itemCount: cart.items.length,
+                  itemBuilder: (context, index) {
+                    final item = cart.items[index];
+                    return Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(AppTheme.paddingMedium),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: iMat.getImage(item.product),
+                              ),
+                            ),
+                            SizedBox(width: AppTheme.paddingMedium),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.product.name,
+                                    style: Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                  Text(
+                                    '${item.total} kr',
+                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(Icons.delete, color: Colors.red[300]),
+                                  onPressed: () => iMat.shoppingCartRemove(item),
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.remove),
+                                        onPressed: () => iMat.shoppingCartUpdate(item, delta: -1),
+                                      ),
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          item.amount.toString(),
+                                          style: Theme.of(context).textTheme.titleMedium,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(Icons.add),
+                                        onPressed: () => iMat.shoppingCartUpdate(item, delta: 1),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+          Container(
+            padding: EdgeInsets.all(AppTheme.paddingMedium),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: Colors.grey[300]!,
+                  width: 1,
+                ),
               ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Total:',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                Consumer<ImatDataHandler>(
+                  builder: (context, iMat, child) {
+                    final cart = iMat.getShoppingCart();
+                    return Text(
+                      '${iMat.shoppingCartTotal()} kr',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    );
+                  },
+                ),
+              ],
             ),
           ),
           Padding(
             padding: EdgeInsets.all(AppTheme.paddingMedium),
             child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CheckoutView()),
+                );
+              },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.colorScheme.primary,
                 foregroundColor: Colors.white,

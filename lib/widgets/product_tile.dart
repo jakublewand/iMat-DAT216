@@ -33,7 +33,7 @@ class ProductTile extends StatelessWidget {
             SizedBox(width: 8),
             BuyButton(
               onPressed: () {
-                iMat.shoppingCartAdd(ShoppingItem(product));
+                iMat.shoppingCartAdd(ShoppingItem(product, amount: 1));
               },
             ),
           ],

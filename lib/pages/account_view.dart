@@ -3,23 +3,23 @@ import 'package:imat/widgets/app_navbar.dart';
 import 'package:imat/widgets/card_details.dart';
 import 'package:imat/widgets/customer_details.dart';
 import 'package:flutter/material.dart';
+import 'package:imat/widgets/page_scaffold.dart';
 
 class AccountView extends StatelessWidget {
   const AccountView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppTheme.paddingMedium),
-          child: Column(
-            children: [
-              AppNavbar(),
-              SizedBox(height: AppTheme.paddingMedium),
-              _customerDetails(context),
-            ],
-          ),
+    return PageScaffold(
+      child: Padding(
+        padding: EdgeInsets.all(AppTheme.paddingMedium),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppNavbar(),
+            SizedBox(height: AppTheme.paddingMedium),
+            _customerDetails(context),
+          ],
         ),
       ),
     );

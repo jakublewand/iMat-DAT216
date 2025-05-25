@@ -5,6 +5,8 @@ import 'package:imat/widgets/app_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:imat/widgets/page_scaffold.dart';
+
 
 // Stateful eftersom man behöver komma ihåg vilken order som är vald
 // När den valda ordern ändras så ritas gränssnittet om pga
@@ -28,9 +30,8 @@ class _HistoryViewState extends State<HistoryView> {
     // Hämta datan som ska visas
     var orders = iMat.orders;
 
-    return Scaffold(
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
+    return PageScaffold(
+      child: Column(
         children: [
           SizedBox(height: AppTheme.paddingLarge),
           AppNavbar(),

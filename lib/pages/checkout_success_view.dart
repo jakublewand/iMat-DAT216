@@ -1,47 +1,48 @@
-import 'package:imat/app_theme.dart';import 'package:imat/widgets/app_navbar.dart';import 'package:flutter/material.dart';
+import 'package:imat/app_theme.dart';
+import 'package:imat/widgets/app_navbar.dart';
+import 'package:flutter/material.dart';
+import 'package:imat/widgets/page_scaffold.dart';
+
 
 class CheckoutSuccessView extends StatelessWidget {
   const CheckoutSuccessView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppTheme.paddingMedium),
-          child: Column(
-            children: [
-              AppNavbar(),
-              SizedBox(height: AppTheme.paddingLarge),
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.check_circle,
-                        size: 80,
-                        color: Colors.green,
-                      ),
-                      SizedBox(height: AppTheme.paddingMedium),
-                      Text(
-                        'Tack för ditt köp!',
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
-                      SizedBox(height: AppTheme.paddingMedium),
-                      Text(
-                        'Din beställning har mottagits och kommer att behandlas.',
-                        style: Theme.of(context).textTheme.bodyLarge,
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: AppTheme.paddingLarge),
-                      _flowButtons(context),
-                    ],
-                  ),
+    return PageScaffold(
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.paddingMedium),
+        child: Column(
+          children: [
+            SizedBox(height: AppTheme.paddingLarge),
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.check_circle,
+                      size: 80,
+                      color: Colors.green,
+                    ),
+                    SizedBox(height: AppTheme.paddingMedium),
+                    Text(
+                      'Tack för ditt köp!',
+                      style: Theme.of(context).textTheme.headlineMedium,
+                    ),
+                    SizedBox(height: AppTheme.paddingMedium),
+                    Text(
+                      'Din beställning har mottagits och kommer att behandlas.',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: AppTheme.paddingLarge),
+                    _flowButtons(context),
+                  ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
