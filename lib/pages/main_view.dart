@@ -9,7 +9,6 @@ import 'dart:math';
 import 'package:imat/pages/checkout_view.dart';
 import 'package:imat/widgets/page_scaffold.dart';
 
-
 class MainView extends StatelessWidget {
   const MainView({super.key});
 
@@ -39,17 +38,25 @@ class MainView extends StatelessWidget {
                             children: [
                               Text(
                                 'Erbjudanden',
-                                style: Theme.of(context).textTheme.headlineMedium,
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium,
                               ),
                               SizedBox(height: AppTheme.paddingMedium),
-                              _buildProductGrid(context, products.take(8).toList()),
+                              _buildProductGrid(
+                                context,
+                                products.take(8).toList(),
+                              ),
                               SizedBox(height: AppTheme.paddingLarge),
                               Text(
                                 'Produkter',
-                                style: Theme.of(context).textTheme.headlineMedium,
+                                style:
+                                    Theme.of(context).textTheme.headlineMedium,
                               ),
                               SizedBox(height: AppTheme.paddingMedium),
-                              _buildProductGrid(context, products.skip(8).take(8).toList()),
+                              _buildProductGrid(
+                                context,
+                                products.skip(8).take(8).toList(),
+                              ),
                             ],
                           ),
                         ),
@@ -83,9 +90,9 @@ class MainView extends StatelessWidget {
         children: [
           Text(
             'iMat',
-            style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+            style: Theme.of(
+              context,
+            ).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
           SizedBox(width: AppTheme.paddingLarge),
           Expanded(
@@ -105,8 +112,12 @@ class MainView extends StatelessWidget {
                   if (value.isEmpty) {
                     context.read<ImatDataHandler>().selectAllProducts();
                   } else {
-                    var searchResults = context.read<ImatDataHandler>().findProducts(value);
-                    context.read<ImatDataHandler>().selectSelection(searchResults);
+                    var searchResults = context
+                        .read<ImatDataHandler>()
+                        .findProducts(value);
+                    context.read<ImatDataHandler>().selectSelection(
+                      searchResults,
+                    );
                   }
                 },
               ),
@@ -163,25 +174,33 @@ class MainView extends StatelessWidget {
       child: Wrap(
         spacing: AppTheme.paddingSmall,
         runSpacing: AppTheme.paddingSmall,
-        children: categories.map((category) {
-          return FilterChip(
-            label: Text(category.key),
-            selected: context.watch<ImatDataHandler>().selectProducts == 
-                     (category.value == null ? 
-                      context.read<ImatDataHandler>().products : 
-                      context.read<ImatDataHandler>().findProductsByCategory(category.value!)),
-            onSelected: (bool selected) {
-              if (selected) {
-                if (category.value == null) {
-                  context.read<ImatDataHandler>().selectAllProducts();
-                } else {
-                  var categoryProducts = context.read<ImatDataHandler>().findProductsByCategory(category.value!);
-                  context.read<ImatDataHandler>().selectSelection(categoryProducts);
-                }
-              }
-            },
-          );
-        }).toList(),
+        children:
+            categories.map((category) {
+              return FilterChip(
+                label: Text(category.key),
+                selected:
+                    context.watch<ImatDataHandler>().selectProducts ==
+                    (category.value == null
+                        ? context.read<ImatDataHandler>().products
+                        : context
+                            .read<ImatDataHandler>()
+                            .findProductsByCategory(category.value!)),
+                onSelected: (bool selected) {
+                  if (selected) {
+                    if (category.value == null) {
+                      context.read<ImatDataHandler>().selectAllProducts();
+                    } else {
+                      var categoryProducts = context
+                          .read<ImatDataHandler>()
+                          .findProductsByCategory(category.value!);
+                      context.read<ImatDataHandler>().selectSelection(
+                        categoryProducts,
+                      );
+                    }
+                  }
+                },
+              );
+            }).toList(),
       ),
     );
   }
@@ -217,11 +236,7 @@ class MainView extends StatelessWidget {
                             color: Colors.green,
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: Icon(
-                            Icons.eco,
-                            color: Colors.white,
-                            size: 16,
-                          ),
+                          child: Icon(Icons.eco, color: Colors.white, size: 16),
                         ),
                       ),
                   ],
@@ -251,7 +266,7 @@ class MainView extends StatelessWidget {
                         ElevatedButton.icon(
                           onPressed: () {
                             context.read<ImatDataHandler>().shoppingCartAdd(
-                              ShoppingItem(product, amount: 1)
+                              ShoppingItem(product, amount: 1),
                             );
                           },
                           icon: Icon(Icons.add),
@@ -280,12 +295,7 @@ class MainView extends StatelessWidget {
     return Container(
       width: minWidth,
       decoration: BoxDecoration(
-        border: Border(
-          left: BorderSide(
-            color: Colors.grey[300]!,
-            width: 1,
-          ),
-        ),
+        border: Border(left: BorderSide(color: Colors.grey[300]!, width: 1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -294,10 +304,7 @@ class MainView extends StatelessWidget {
             padding: EdgeInsets.all(AppTheme.paddingMedium),
             decoration: BoxDecoration(
               border: Border(
-                bottom: BorderSide(
-                  color: Colors.grey[300]!,
-                  width: 1,
-                ),
+                bottom: BorderSide(color: Colors.grey[300]!, width: 1),
               ),
             ),
             child: Text(
@@ -322,9 +329,7 @@ class MainView extends StatelessWidget {
                         SizedBox(height: AppTheme.paddingMedium),
                         Text(
                           'Inga varor i varukorgen än!',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                          ),
+                          style: TextStyle(color: Colors.grey[600]),
                         ),
                       ],
                     ),
@@ -360,13 +365,15 @@ class MainView extends StatelessWidget {
                                 children: [
                                   Text(
                                     item.product.name,
-                                    style: Theme.of(context).textTheme.titleMedium,
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
                                   ),
                                   Text(
                                     '${item.total} kr',
-                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                      color: Colors.grey[600],
-                                    ),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(color: Colors.grey[600]),
                                   ),
                                 ],
                               ),
@@ -374,8 +381,12 @@ class MainView extends StatelessWidget {
                             Row(
                               children: [
                                 IconButton(
-                                  icon: Icon(Icons.delete, color: Colors.red[300]),
-                                  onPressed: () => iMat.shoppingCartRemove(item),
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color: Colors.red[300],
+                                  ),
+                                  onPressed:
+                                      () => iMat.shoppingCartRemove(item),
                                 ),
                                 Container(
                                   decoration: BoxDecoration(
@@ -386,7 +397,11 @@ class MainView extends StatelessWidget {
                                     children: [
                                       IconButton(
                                         icon: Icon(Icons.remove),
-                                        onPressed: () => iMat.shoppingCartUpdate(item, delta: -1),
+                                        onPressed:
+                                            () => iMat.shoppingCartUpdate(
+                                              item,
+                                              delta: -1,
+                                            ),
                                       ),
                                       Container(
                                         width: 40,
@@ -394,12 +409,19 @@ class MainView extends StatelessWidget {
                                         alignment: Alignment.center,
                                         child: Text(
                                           item.amount.toString(),
-                                          style: Theme.of(context).textTheme.titleMedium,
+                                          style:
+                                              Theme.of(
+                                                context,
+                                              ).textTheme.titleMedium,
                                         ),
                                       ),
                                       IconButton(
                                         icon: Icon(Icons.add),
-                                        onPressed: () => iMat.shoppingCartUpdate(item, delta: 1),
+                                        onPressed:
+                                            () => iMat.shoppingCartUpdate(
+                                              item,
+                                              delta: 1,
+                                            ),
                                       ),
                                     ],
                                   ),
@@ -419,19 +441,13 @@ class MainView extends StatelessWidget {
             padding: EdgeInsets.all(AppTheme.paddingMedium),
             decoration: BoxDecoration(
               border: Border(
-                top: BorderSide(
-                  color: Colors.grey[300]!,
-                  width: 1,
-                ),
+                top: BorderSide(color: Colors.grey[300]!, width: 1),
               ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Total:',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
+                Text('Total:', style: Theme.of(context).textTheme.titleMedium),
                 Consumer<ImatDataHandler>(
                   builder: (context, iMat, child) {
                     final cart = iMat.getShoppingCart();

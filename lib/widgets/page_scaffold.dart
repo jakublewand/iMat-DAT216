@@ -6,11 +6,7 @@ class PageScaffold extends StatelessWidget {
   final Widget child;
   final Color? backgroundColor;
 
-  const PageScaffold({
-    required this.child,
-    this.backgroundColor,
-    super.key,
-  });
+  const PageScaffold({required this.child, this.backgroundColor, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,14 +14,7 @@ class PageScaffold extends StatelessWidget {
       body: Container(
         color: backgroundColor ?? Colors.white,
         child: SafeArea(
-          child: Column(
-            children: [
-              AppNavbar(),
-              Expanded(
-                child: child,
-              ),
-            ],
-          ),
+          child: Column(children: [AppNavbar(), Expanded(child: child)]),
         ),
       ),
     );

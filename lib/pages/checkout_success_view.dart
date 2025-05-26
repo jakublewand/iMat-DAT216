@@ -5,7 +5,6 @@ import 'package:imat/widgets/page_scaffold.dart';
 import 'package:imat/widgets/app_navbar.dart';
 import 'package:imat/pages/history_view.dart';
 
-
 class CheckoutSuccessView extends StatelessWidget {
   const CheckoutSuccessView({super.key});
 
@@ -22,11 +21,7 @@ class CheckoutSuccessView extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.check_circle,
-                      size: 80,
-                      color: Colors.green,
-                    ),
+                    Icon(Icons.check_circle, size: 80, color: Colors.green),
                     SizedBox(height: AppTheme.paddingMedium),
                     Text(
                       'Tack för ditt köp!',
@@ -50,8 +45,6 @@ class CheckoutSuccessView extends StatelessWidget {
     );
   }
 
-  
-
   Widget _flowButtons(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -66,14 +59,14 @@ class CheckoutSuccessView extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             // Navigate to history/orders view (you may need to adjust this)
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => HistoryView()),
-                        );
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HistoryView()),
+            );
           },
           child: Text('Se beställningar'),
         ),
       ],
     );
-    }
-} 
+  }
+}

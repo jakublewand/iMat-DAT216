@@ -57,13 +57,19 @@ class CheckoutView extends StatelessWidget {
                                   SizedBox(width: AppTheme.paddingMedium),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           item.product.name,
-                                          style: Theme.of(context).textTheme.titleMedium,
+                                          style:
+                                              Theme.of(
+                                                context,
+                                              ).textTheme.titleMedium,
                                         ),
-                                        Text('${item.product.price} kr/${item.product.unit}'),
+                                        Text(
+                                          '${item.product.price} kr/${item.product.unit}',
+                                        ),
                                       ],
                                     ),
                                   ),
@@ -71,7 +77,11 @@ class CheckoutView extends StatelessWidget {
                                     children: [
                                       IconButton(
                                         icon: Icon(Icons.remove),
-                                        onPressed: () => iMat.shoppingCartUpdate(item, delta: -1),
+                                        onPressed:
+                                            () => iMat.shoppingCartUpdate(
+                                              item,
+                                              delta: -1,
+                                            ),
                                       ),
                                       SizedBox(
                                         width: 40,
@@ -82,7 +92,11 @@ class CheckoutView extends StatelessWidget {
                                       ),
                                       IconButton(
                                         icon: Icon(Icons.add),
-                                        onPressed: () => iMat.shoppingCartUpdate(item, delta: 1),
+                                        onPressed:
+                                            () => iMat.shoppingCartUpdate(
+                                              item,
+                                              delta: 1,
+                                            ),
                                       ),
                                     ],
                                   ),

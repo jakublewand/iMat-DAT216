@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:imat/widgets/page_scaffold.dart';
 
-
 // Stateful eftersom man behöver komma ihåg vilken order som är vald
 // När den valda ordern ändras så ritas gränssnittet om pga
 // anropet till setState
@@ -59,11 +58,12 @@ class _HistoryViewState extends State<HistoryView> {
     );
   }
 
-
-
   Widget _ordersList(BuildContext context, List<Order> orders, Function onTap) {
     return ListView(
-      children: [for (final order in List.from(orders.reversed)) _orderInfo(order, onTap)],
+      children: [
+        for (final order in List.from(orders.reversed))
+          _orderInfo(order, onTap),
+      ],
     );
   }
 

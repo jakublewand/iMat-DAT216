@@ -3,7 +3,6 @@ import 'package:imat/widgets/app_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:imat/widgets/page_scaffold.dart';
 
-
 class SignUpView extends StatelessWidget {
   const SignUpView({super.key});
 
@@ -58,4 +57,4 @@ class SignUpView extends StatelessWidget {
       ],
     );
   }
-} 
+}

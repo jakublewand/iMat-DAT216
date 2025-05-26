@@ -13,7 +13,7 @@ class AppNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var iMat = context.watch<ImatDataHandler>();
-    
+
     return Container(
       padding: EdgeInsets.all(AppTheme.paddingMedium),
       decoration: BoxDecoration(
@@ -37,9 +37,9 @@ class AppNavbar extends StatelessWidget {
             },
             child: Text(
               'iMat',
-              style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
           SizedBox(width: AppTheme.paddingLarge),
@@ -60,15 +60,21 @@ class AppNavbar extends StatelessWidget {
                   if (value.isEmpty) {
                     context.read<ImatDataHandler>().selectAllProducts();
                   } else {
-                    var searchResults = context.read<ImatDataHandler>().findProducts(value);
-                    context.read<ImatDataHandler>().selectSelection(searchResults);
+                    var searchResults = context
+                        .read<ImatDataHandler>()
+                        .findProducts(value);
+                    context.read<ImatDataHandler>().selectSelection(
+                      searchResults,
+                    );
                   }
                 },
               ),
             ),
           ),
           SizedBox(width: AppTheme.paddingLarge),
-          ...iMat.isLoggedIn ? _loggedInButtons(context, iMat) : _loggedOutButtons(context),
+          ...iMat.isLoggedIn
+              ? _loggedInButtons(context, iMat)
+              : _loggedOutButtons(context),
         ],
       ),
     );

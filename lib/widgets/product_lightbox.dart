@@ -36,7 +36,7 @@ class ProductLightbox extends StatelessWidget {
                     child: iMat.getImage(product),
                   ),
                   SizedBox(height: AppTheme.paddingMedium),
-                  
+
                   // Product name
                   Text(
                     product.name,
@@ -44,13 +44,13 @@ class ProductLightbox extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                   SizedBox(height: AppTheme.paddingSmall),
-                  
+
                   // Product price
                   Text(
                     '${product.price} ${product.unit}',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
-                  
+
                   // Product brand and description
                   if (detail != null) ...[
                     SizedBox(height: AppTheme.paddingSmall),
@@ -69,7 +69,7 @@ class ProductLightbox extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
-                  
+
                   SizedBox(height: AppTheme.paddingLarge),
                   _flowButtons(context, iMat),
                 ],
@@ -99,7 +99,7 @@ class ProductLightbox extends StatelessWidget {
 
   Widget _flowButtons(BuildContext context, ImatDataHandler iMat) {
     bool isFavorite = iMat.isFavorite(product);
-    
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
@@ -135,4 +135,4 @@ class ProductLightbox extends StatelessWidget {
       },
     );
   }
-} 
+}
