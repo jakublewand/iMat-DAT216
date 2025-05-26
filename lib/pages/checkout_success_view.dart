@@ -2,6 +2,8 @@ import 'package:imat/app_theme.dart';
 import 'package:imat/widgets/app_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:imat/widgets/page_scaffold.dart';
+import 'package:imat/widgets/app_navbar.dart';
+import 'package:imat/pages/history_view.dart';
 
 
 class CheckoutSuccessView extends StatelessWidget {
@@ -64,11 +66,14 @@ class CheckoutSuccessView extends StatelessWidget {
         ElevatedButton(
           onPressed: () {
             // Navigate to history/orders view (you may need to adjust this)
-            Navigator.popUntil(context, (route) => route.isFirst);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => HistoryView()),
+                        );
           },
           child: Text('Se beställningar'),
         ),
       ],
     );
-  }
+    }
 } 
