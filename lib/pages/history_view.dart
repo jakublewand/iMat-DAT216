@@ -34,7 +34,6 @@ class _HistoryViewState extends State<HistoryView> {
       child: Column(
         children: [
           SizedBox(height: AppTheme.paddingLarge),
-          AppNavbar(),
           Expanded(
             child: Row(
               children: [

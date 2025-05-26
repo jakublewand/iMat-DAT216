@@ -16,7 +16,6 @@ class AccountView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            AppNavbar(),
             SizedBox(height: AppTheme.paddingMedium),
             _customerDetails(context),
           ],
