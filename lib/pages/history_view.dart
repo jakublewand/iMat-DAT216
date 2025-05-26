@@ -63,7 +63,7 @@ class _HistoryViewState extends State<HistoryView> {
 
   Widget _ordersList(BuildContext context, List<Order> orders, Function onTap) {
     return ListView(
-      children: [for (final order in orders) _orderInfo(order, onTap)],
+      children: [for (final order in List.from(orders.reversed)) _orderInfo(order, onTap)],
     );
   }
 
