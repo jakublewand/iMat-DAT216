@@ -2,6 +2,8 @@ import 'package:imat/model/imat/customer.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:imat/app_theme.dart';
+
 
 // Simple widget to edit card information.
 // It's probably better to use Form
@@ -188,8 +190,8 @@ class _CustomerDetailsState extends State<CustomerDetails> {
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: _saveCustomer,
-              icon: const Icon(Icons.save),
-              label: const Text('Spara uppgifter'),
+              icon: const Icon(Icons.save, color: AppTheme.accentColor),
+              label: const Text('Spara uppgifter', style: TextStyle(color: Colors.black)),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(

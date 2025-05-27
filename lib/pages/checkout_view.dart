@@ -132,7 +132,7 @@ class CheckoutView extends StatelessWidget {
                               );
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.brown,
+                              backgroundColor: AppTheme.secondaryColor,
                               foregroundColor: Colors.white,
                               padding: EdgeInsets.symmetric(
                                 vertical: AppTheme.paddingMedium,

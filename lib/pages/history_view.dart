@@ -57,21 +57,33 @@ class _HistoryViewState extends State<HistoryView> {
     );
   }
 
-  Widget _ordersList(BuildContext context, List<Order> orders, Function onTap) {
-    return ListView(
+  Widget _orderInfo(Order order, Function onTap) {
+    return Column(
       children: [
-        for (final order in List.from(orders.reversed))
-          _orderInfo(order, onTap),
+        ListTile(
+          onTap: () => onTap(order),
+          title: Text('Order ${order.orderNumber}, ${_formatDateTime(order.date)}'),
+        ),
+        Divider(
+          height: 1,
+          thickness: 1,
+          color: Colors.black,
+        ),
       ],
     );
   }
 
-  Widget _orderInfo(Order order, Function onTap) {
-    return ListTile(
-      onTap: () => onTap(order),
-      title: Text('Order ${order.orderNumber}, ${_formatDateTime(order.date)}'),
+  Widget _ordersList(BuildContext context, List<Order> orders, Function onTap) {
+    final sortedOrders = List<Order>.from(orders)
+      ..sort((a, b) => b.date.compareTo(a.date));  
+
+    return ListView.builder(
+      itemCount: sortedOrders.length,
+      itemBuilder: (context, index) {
+        return _orderInfo(sortedOrders[index], onTap);
+      },
     );
-  }
+}
 
   _selectOrder(Order order) {
     setState(() {

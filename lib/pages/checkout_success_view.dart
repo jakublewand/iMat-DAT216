@@ -52,7 +52,14 @@ class CheckoutSuccessView extends StatelessWidget {
             // Navigate back to main view - we'll pop all the way back
             Navigator.popUntil(context, (route) => route.isFirst);
           },
-          child: Text('Fortsätt handla'),
+          style: ElevatedButton.styleFrom(
+            elevation: 2,
+            side: BorderSide(
+              color: Colors.black,
+              width: 1,
+            ),
+          ),
+          child: Text('Fortsätt handla', style: TextStyle(color: Colors.black)),
         ),
         ElevatedButton(
           onPressed: () {
@@ -62,7 +69,14 @@ class CheckoutSuccessView extends StatelessWidget {
               MaterialPageRoute(builder: (context) => HistoryView()),
             );
           },
-          child: Text('Se beställningar'),
+          style: ElevatedButton.styleFrom(
+            elevation: 2,
+            side: BorderSide(
+              color: Colors.black,
+              width: 1,
+            ),
+          ),
+          child: Text('Se beställningar', style: TextStyle(color: Colors.black)),
         ),
       ],
     );

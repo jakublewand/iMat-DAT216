@@ -107,7 +107,7 @@ class _LoginViewState extends State<LoginView> {
                                 Navigator.pop(context);
                               },
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.brown[700],
+                                backgroundColor: AppTheme.secondaryColor,
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),

@@ -43,21 +43,21 @@ class ShoppingCart extends StatelessWidget {
                       content: Text('Är du säker på att du vill tömma varukorgen?'),
                       actions: [
                         ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primaryColor,
+                            foregroundColor: Colors.white,
+                          ),
                           onPressed: () {
                             context.read<ImatDataHandler>().shoppingCartClear();
                             Navigator.pop(context);
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.colorScheme.primary,
-                            foregroundColor: Colors.white,
-                          ),
-                          child: Text('Ja'),
+                          child: Text('Ja', style: TextStyle(color: Colors.black)),
                         ),
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: Text('Avbryt'),
+                          child: Text('Avbryt', style: TextStyle(color: Colors.black)),
                         ),
                       ],
                     ));
@@ -217,7 +217,7 @@ class ShoppingCart extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.colorScheme.primary,
+                backgroundColor: AppTheme.accentColor,
                 foregroundColor: Colors.white,
                 fixedSize: Size(double.infinity, 50),
                 padding: EdgeInsets.symmetric(vertical: AppTheme.paddingMedium),

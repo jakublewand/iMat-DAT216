@@ -114,7 +114,7 @@ class ProductText extends StatelessWidget {
                 icon: Icon(Icons.add),
                 label: Text('Köp'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.colorScheme.primary,
+                  backgroundColor: AppTheme.secondaryColor,
                   foregroundColor: Colors.white,
                 ),
               ),

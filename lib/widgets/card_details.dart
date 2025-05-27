@@ -2,6 +2,8 @@ import 'package:imat/model/imat/credit_card.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:imat/app_theme.dart';
+
 
 // Simple widget to edit card information.
 // It's probably better to use Form
@@ -59,12 +61,27 @@ class _CardDetailsState extends State<CardDetails> {
           controller: _codeController,
           decoration: InputDecoration(labelText: 'CVV-kod'),
         ),
+        SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            ElevatedButton(onPressed: _saveCard, child: Text('Spara')),
+            Padding(
+              padding: EdgeInsets.only(right: 16, left: 16),
+              child: ElevatedButton.icon(
+              onPressed: _saveCard,
+              icon: const Icon(Icons.save, color: AppTheme.accentColor),
+              label: const Text('Spara', style: TextStyle(color: Colors.black)),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
+            ),
           ],
         ),
+        SizedBox(height: 16),
       ],
     );
   }

@@ -86,7 +86,7 @@ class ProductLightbox extends StatelessWidget {
       children: [
         Text(
           'Produktdetaljer',
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppTheme.secondaryColor),
         ),
         IconButton(
           onPressed: () => Navigator.pop(context),
@@ -109,17 +109,17 @@ class ProductLightbox extends StatelessWidget {
           },
           icon: Icon(
             isFavorite ? Icons.star : Icons.star_border,
-            color: Colors.orange,
+            color: AppTheme.accentColor,
           ),
-          label: Text(isFavorite ? 'Ta bort favorit' : 'Lägg till favorit'),
+          label: Text(isFavorite ? 'Ta bort favorit' : 'Lägg till favorit', style: TextStyle(color: AppTheme.secondaryColor)),
         ),
         ElevatedButton.icon(
           onPressed: () {
             iMat.shoppingCartAdd(ShoppingItem(product));
             Navigator.pop(context);
           },
-          icon: Icon(Icons.shopping_cart),
-          label: Text('Lägg i kundvagn'),
+          icon: Icon(Icons.shopping_cart, color: Colors.black),
+          label: Text('Lägg i kundvagn', style: TextStyle(color: AppTheme.secondaryColor)),
         ),
       ],
     );

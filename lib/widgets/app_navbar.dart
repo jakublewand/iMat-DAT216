@@ -17,7 +17,7 @@ class AppNavbar extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(AppTheme.paddingMedium),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.primaryColor,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -46,7 +46,7 @@ class AppNavbar extends StatelessWidget {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.grey[100],
+                color: AppTheme.primaryShadowColor,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: TextField(
@@ -77,16 +77,43 @@ class AppNavbar extends StatelessWidget {
     return [
       ElevatedButton(
         onPressed: () => _showHistory(context),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppTheme.primaryColor,
+          foregroundColor: Colors.black,
+          elevation: 2,
+          side: BorderSide(
+            color: Colors.black,
+            width: 1,
+          ),
+        ),
         child: Text('Köphistorik'),
       ),
       SizedBox(width: 8),
       ElevatedButton(
         onPressed: () => _showAccount(context),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppTheme.primaryColor,
+          foregroundColor: Colors.black,
+          elevation: 2,
+          side: BorderSide(
+            color: Colors.black,
+            width: 1,
+          ),
+        ),
         child: Text('Min profil'),
       ),
       SizedBox(width: 8),
       ElevatedButton(
         onPressed: () => _logout(context, iMat),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppTheme.primaryColor,
+          foregroundColor: Colors.black,
+          elevation: 2,
+          side: BorderSide(
+            color: Colors.black,
+            width: 1,
+          ),
+        ),
         child: Text('Logga ut'),
       ),
     ];
@@ -96,11 +123,29 @@ class AppNavbar extends StatelessWidget {
     return [
       ElevatedButton(
         onPressed: () => _showLogin(context),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppTheme.primaryColor,
+          foregroundColor: Colors.black,
+          elevation: 2,
+          side: BorderSide(
+            color: Colors.black,
+            width: 1,
+          ),
+        ),
         child: Text('Logga in'),
       ),
       SizedBox(width: 8),
       ElevatedButton(
         onPressed: () => _showLogin(context),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppTheme.primaryColor,
+          foregroundColor: Colors.black,
+          elevation: 2,
+          side: BorderSide(
+            color: Colors.black,
+            width: 1,
+          ),
+        ),
         child: Text('Registrera'),
       ),
     ];
@@ -137,7 +182,7 @@ class AppNavbar extends StatelessWidget {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Avbryt'),
+              child: Text('Avbryt', style: TextStyle(color: AppTheme.accentColor),),
             ),
             TextButton(
               onPressed: () {
@@ -145,7 +190,8 @@ class AppNavbar extends StatelessWidget {
                 Navigator.pop(context);
                 Navigator.popUntil(context, (route) => route.isFirst);
               },
-              child: Text('Logga ut'),
+              child: Text('Logga ut', style: TextStyle(color: AppTheme.primaryColor),),
+
             ),
           ],
         );
