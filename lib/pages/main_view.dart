@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat_data_handler.dart';
-import 'package:imat/model/product_filter.dart';
 import 'package:provider/provider.dart';
 import 'package:imat/model/imat/shopping_item.dart';
 import 'dart:math';
@@ -136,9 +135,9 @@ class MainView extends StatelessWidget {
     return GridView.builder(
       shrinkWrap: true,
       physics: NeverScrollableScrollPhysics(),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        childAspectRatio: 0.8,
+      gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 300,
+        childAspectRatio: 4/5,
         crossAxisSpacing: AppTheme.paddingMedium,
         mainAxisSpacing: AppTheme.paddingMedium,
       ),
@@ -152,7 +151,11 @@ class MainView extends StatelessWidget {
               Expanded(
                 child: Stack(
                   children: [
-                    context.read<ImatDataHandler>().getImage(product),
+                    Container(
+                      width: double.infinity,
+                      height: double.infinity,
+                      child: context.read<ImatDataHandler>().getImage(product),
+                    ),
                     if (product.isEcological)
                       Positioned(
                         top: 8,

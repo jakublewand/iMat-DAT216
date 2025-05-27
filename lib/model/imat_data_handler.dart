@@ -296,14 +296,14 @@ class ImatDataHandler extends ChangeNotifier {
   // När bilden har hämtats meddelas gränssnittet och bilden visas
   // automatiskt om getImage använts i ett sammanhang som använder watch.
   // getImage använder getImageData med Boxfit.cover.
-  Image getImage(Product p) {
+  Widget getImage(Product p) {
     String url = InternetHandler.getImageUrl(p.productId);
 
-    Image? image = _getImage(url);
+    Image? image = _getImage(url, fit: BoxFit.cover);
 
     bool imageFound = image != null;
 
-    return imageFound ? image : Image.asset('assets/images/placeholder.png');
+    return imageFound ? image : Icon(Icons.image);
   }
 
   // Can be used to create desired images using
@@ -472,7 +472,7 @@ import 'package:http/http.dart' as http;
   }
 
   /// Students can use this to get an Image widget
-  Image? _getImage(String url, {BoxFit fit = BoxFit.cover}) {
+  Image? _getImage(String url, {BoxFit? fit}) {
     final bytes = _getImageData(url);
     if (bytes != null) {
       return Image.memory(bytes, fit: fit);
