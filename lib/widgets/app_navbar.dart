@@ -59,16 +59,7 @@ class AppNavbar extends StatelessWidget {
                   border: InputBorder.none,
                 ),
                 onChanged: (value) {
-                  if (value.isEmpty) {
-                    context.read<ImatDataHandler>().selectAllProducts();
-                  } else {
-                    var searchResults = context
-                        .read<ImatDataHandler>()
-                        .findProducts(value);
-                    context.read<ImatDataHandler>().selectSelection(
-                      searchResults,
-                    );
-                  }
+                  context.read<ImatDataHandler>().searchProducts(value);
                 },
               ),
             ),

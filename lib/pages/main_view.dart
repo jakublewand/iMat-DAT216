@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat_data_handler.dart';
+import 'package:imat/model/product_filter.dart';
 import 'package:provider/provider.dart';
 import 'package:imat/model/imat/shopping_item.dart';
 import 'dart:math';
@@ -100,6 +101,9 @@ class MainView extends StatelessWidget {
       MapEntry('Frukter', ProductCategory.FRUIT),
     ];
 
+    final iMatDataHandler = context.watch<ImatDataHandler>();
+    final currentCategory = iMatDataHandler.currentCategoryFilter?.category;
+
     return Container(
       padding: EdgeInsets.symmetric(
         vertical: AppTheme.paddingMedium,
@@ -112,24 +116,13 @@ class MainView extends StatelessWidget {
             categories.map((category) {
               return FilterChip(
                 label: Text(category.key),
-                selected:
-                    context.watch<ImatDataHandler>().selectProducts ==
-                    (category.value == null
-                        ? context.read<ImatDataHandler>().products
-                        : context
-                            .read<ImatDataHandler>()
-                            .findProductsByCategory(category.value!)),
+                selected: currentCategory == category.value,
                 onSelected: (bool selected) {
                   if (selected) {
                     if (category.value == null) {
                       context.read<ImatDataHandler>().selectAllProducts();
                     } else {
-                      var categoryProducts = context
-                          .read<ImatDataHandler>()
-                          .findProductsByCategory(category.value!);
-                      context.read<ImatDataHandler>().selectSelection(
-                        categoryProducts,
-                      );
+                      context.read<ImatDataHandler>().selectCategory(category.value!);
                     }
                   }
                 },

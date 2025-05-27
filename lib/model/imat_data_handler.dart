@@ -12,6 +12,7 @@ import 'package:imat/model/imat/shopping_cart.dart';
 import 'package:imat/model/imat/shopping_item.dart';
 import 'package:imat/model/imat/user.dart';
 import 'package:imat/model/internet_handler.dart';
+import 'package:imat/model/product_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -30,58 +31,103 @@ class ImatDataHandler extends ChangeNotifier {
   List<Order> get orders => _orders;
 
   //
-  // Handle product selections
+  // Handle product filtering
   //
 
-  // Returnernar de produkter som är valda
-  List<Product> get selectProducts => _selectProducts;
+  // Current active filters
+  final List<ProductFilter> _filters = [];
 
-  // Nollställer urvalet till alla produkter.
-  // Anropar notifyListeners så att GUI:t får
-  // veta att urvalet ändrats.
+  // Reactive getter that returns filtered products based on current filters
+  List<Product> get selectProducts => _getFilteredProducts();
+
+  // Get current active filters
+  List<ProductFilter> get activeFilters => List.unmodifiable(_filters);
+
+  // Get the current category filter if one exists
+  CategoryFilter? get currentCategoryFilter => 
+      _filters.whereType<CategoryFilter>().firstOrNull;
+
+  // Apply filters to get the current product selection
+  List<Product> _getFilteredProducts() {
+    List<Product> result = List.from(_products);
+    
+    for (final filter in _filters) {
+      result = filter.apply(result);
+    }
+    
+    return result;
+  }
+
+  // Add a filter to the current filters
+  void addFilter(ProductFilter filter) {
+    // Remove any existing filter of the same type for search and category
+    if (filter is SearchFilter) {
+      _filters.removeWhere((f) => f is SearchFilter);
+    } else if (filter is CategoryFilter) {
+      _filters.removeWhere((f) => f is CategoryFilter);
+    } else if (filter is FavoritesFilter) {
+      _filters.removeWhere((f) => f is FavoritesFilter);
+    }
+    
+    _filters.add(filter);
+    notifyListeners();
+  }
+
+  // Remove a specific filter
+  void removeFilter(ProductFilter filter) {
+    _filters.remove(filter);
+    notifyListeners();
+  }
+
+  // Remove all filters of a specific type
+  void removeFiltersOfType<T extends ProductFilter>() {
+    _filters.removeWhere((filter) => filter is T);
+    notifyListeners();
+  }
+
+  // Clear all filters
+  void clearAllFilters() {
+    _filters.clear();
+    notifyListeners();
+  }
+
+  // Convenience methods for common filtering operations
+  
+  // Show all products (clear all filters)
   void selectAllProducts() {
-    _selectProducts.clear();
-    _selectProducts.addAll(_products);
-    notifyListeners();
+    clearAllFilters();
   }
 
-  // Välj alla favoritmarkerade produkter.
-  // Detta sätter selectProducts till de produkter
-  // som markerats som favoriter och informerar GUI:t
-  // om att urvalet har ändrats
+  // Show only favorite products
   void selectFavorites() {
-    _selectProducts.clear();
-    _selectProducts.addAll(favorites);
-    notifyListeners();
+    final favoriteIds = _favorites.keys.toSet();
+    addFilter(FavoritesFilter(favoriteIds));
   }
 
-  // A list of products that has been produced somehow.
-  // Sätter selectProducts till innehållet i listan selection.
-  // Med denna metod kan man sätta urvalet till vad som helst.
-  // Meddelar GUI:t att urvalet har ändrats
-  void selectSelection(List<Product> selection) {
-    _selectProducts.clear();
-    _selectProducts.addAll(selection);
-    notifyListeners();
+  // Filter by category
+  void selectCategory(ProductCategory category) {
+    addFilter(CategoryFilter(category));
   }
 
+  // Filter by search term
+  void searchProducts(String searchTerm) {
+    if (searchTerm.isEmpty) {
+      removeFiltersOfType<SearchFilter>();
+    } else {
+      addFilter(SearchFilter(searchTerm));
+    }
+  }
+
+  // Legacy methods for backward compatibility (now using filters internally)
+  
   // Returnerar alla produkter som hör till category.
-  // Med denna och setSelection kan man sätta urvalet till en viss kategori.
-  // Meddelar GUI:t att urvalet har ändrats.
   List<Product> findProductsByCategory(ProductCategory category) {
-    return products.where((product) => product.category == category).toList();
+    return CategoryFilter(category).apply(_products);
   }
 
   // Returnerar en lista med alla produkter vars namn matchar search.
-  // Sökningen görs utan hänsyn till case och var i strängen search finns.
-  // T ex så hittar "me" både Clementin och Lime.
   List<Product> findProducts(String search) {
-    final lowerSearch = search.toLowerCase();
-
-    return products.where((product) {
-      final name = product.name.toLowerCase();
-      return name.contains(lowerSearch);
-    }).toList();
+    return SearchFilter(search).apply(_products);
   }
 
   // Returnerar produkten med productId idNbr eller null
@@ -120,6 +166,19 @@ class ImatDataHandler extends ChangeNotifier {
     } else {
       _favorites[pid] = product;
       _addFavorite(product);
+    }
+    
+    // Update favorite filters if active
+    _updateFavoriteFilters();
+  }
+
+  // Update favorite filters with current favorite list
+  void _updateFavoriteFilters() {
+    final favoriteFilterIndex = _filters.indexWhere((filter) => filter is FavoritesFilter);
+    if (favoriteFilterIndex != -1) {
+      // Replace existing favorite filter with updated one
+      _filters[favoriteFilterIndex] = FavoritesFilter(_favorites.keys.toSet());
+      notifyListeners();
     }
   }
 
@@ -364,8 +423,6 @@ class ImatDataHandler extends ChangeNotifier {
 
   final List<Product> _products = [];
 
-  final List<Product> _selectProducts = [];
-
   final List<ProductDetail> _details = [];
 
   final Map<int, Product> _favorites = {};
@@ -485,9 +542,6 @@ import 'package:http/http.dart' as http;
 
     _products.clear();
     _products.addAll(jsonData.map((item) => Product.fromJson(item)).toList());
-
-    _selectProducts.clear();
-    _selectProducts.addAll(_products);
 
     // Fetching product details
     response = await InternetHandler.getDetails();
