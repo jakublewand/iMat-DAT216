@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/pages/checkout_success_view.dart';
-import 'package:imat/widgets/app_navbar.dart';
 import 'package:imat/widgets/customer_details.dart';
 import 'package:provider/provider.dart';
 import 'package:imat/widgets/page_scaffold.dart';

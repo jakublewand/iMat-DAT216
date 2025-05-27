@@ -1,5 +1,4 @@
 import 'package:imat/app_theme.dart';
-import 'package:imat/widgets/app_navbar.dart';
 import 'package:imat/widgets/card_details.dart';
 import 'package:imat/widgets/customer_details.dart';
 import 'package:flutter/material.dart';

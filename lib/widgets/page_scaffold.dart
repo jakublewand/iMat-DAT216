@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:imat/app_theme.dart';
 import 'package:imat/widgets/app_navbar.dart';
 
 class PageScaffold extends StatelessWidget {

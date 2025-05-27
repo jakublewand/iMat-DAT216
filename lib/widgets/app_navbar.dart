@@ -50,11 +50,13 @@ class AppNavbar extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: TextField(
+                textAlignVertical: TextAlignVertical.center,
                 decoration: InputDecoration(
                   hintText: 'Sök',
                   prefixIcon: Icon(Icons.search),
+                  // Workaround to make it vertically centered
+                  contentPadding: EdgeInsets.only(bottom: 8),
                   border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
                 ),
                 onChanged: (value) {
                   if (value.isEmpty) {

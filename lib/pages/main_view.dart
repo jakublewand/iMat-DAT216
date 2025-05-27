@@ -3,7 +3,6 @@ import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:imat/pages/login_view.dart';
 import 'package:imat/model/imat/shopping_item.dart';
 import 'dart:math';
 import 'package:imat/pages/checkout_view.dart';
@@ -67,71 +66,6 @@ class MainView extends StatelessWidget {
                 _buildCart(context),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildAppBar(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(AppTheme.paddingMedium),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Text(
-            'iMat',
-            style: Theme.of(
-              context,
-            ).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
-          ),
-          SizedBox(width: AppTheme.paddingLarge),
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: TextField(
-                decoration: InputDecoration(
-                  hintText: 'Sök',
-                  prefixIcon: Icon(Icons.search),
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16),
-                ),
-                onChanged: (value) {
-                  if (value.isEmpty) {
-                    context.read<ImatDataHandler>().selectAllProducts();
-                  } else {
-                    var searchResults = context
-                        .read<ImatDataHandler>()
-                        .findProducts(value);
-                    context.read<ImatDataHandler>().selectSelection(
-                      searchResults,
-                    );
-                  }
-                },
-              ),
-            ),
-          ),
-          SizedBox(width: AppTheme.paddingLarge),
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => LoginView()),
-              );
-            },
           ),
         ],
       ),
@@ -369,7 +303,7 @@ class MainView extends StatelessWidget {
                                         Theme.of(context).textTheme.titleMedium,
                                   ),
                                   Text(
-                                    '${item.total} kr',
+                                    '${item.total.toStringAsFixed(2)} kr',
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleSmall
@@ -450,9 +384,8 @@ class MainView extends StatelessWidget {
                 Text('Total:', style: Theme.of(context).textTheme.titleMedium),
                 Consumer<ImatDataHandler>(
                   builder: (context, iMat, child) {
-                    final cart = iMat.getShoppingCart();
                     return Text(
-                      '${iMat.shoppingCartTotal()} kr',
+                      '${iMat.shoppingCartTotal().toStringAsFixed(2)} kr',
                       style: Theme.of(context).textTheme.titleMedium,
                     );
                   },

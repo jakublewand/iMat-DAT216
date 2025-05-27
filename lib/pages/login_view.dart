@@ -1,7 +1,6 @@
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/pages/signup_view.dart';
-import 'package:imat/widgets/app_navbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:imat/widgets/page_scaffold.dart';
