@@ -298,12 +298,27 @@ class ImatDataHandler extends ChangeNotifier {
   // getImage använder getImageData med Boxfit.cover.
   Widget getImage(Product p) {
     String url = InternetHandler.getImageUrl(p.productId);
-
-    Image? image = _getImage(url, fit: BoxFit.cover);
-
-    bool imageFound = image != null;
-
-    return imageFound ? image : Icon(Icons.image);
+    
+    return Image.network(
+      url,
+      fit: BoxFit.cover,
+      headers: InternetHandler.apiKeyHeader,
+      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
+        if (wasSynchronouslyLoaded) return child;
+        return AnimatedSwitcher(
+          duration: Duration(milliseconds: 200),
+          child: frame != null ? child : Container(
+            color: Colors.grey[200],
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) {
+        return Icon(Icons.image);
+      },
+    );
   }
 
   // Can be used to create desired images using

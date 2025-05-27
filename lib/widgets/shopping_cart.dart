@@ -1,0 +1,232 @@
+import 'package:flutter/material.dart';
+import 'package:imat/app_theme.dart';
+import 'package:imat/model/imat_data_handler.dart';
+import 'package:imat/pages/checkout_view.dart';
+import 'package:provider/provider.dart';
+import 'dart:math';
+
+class ShoppingCart extends StatelessWidget {
+  const ShoppingCart({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final minWidth = max(350.0, screenWidth * 0.25);
+
+    return Container(
+      width: minWidth,
+      decoration: BoxDecoration(
+        border: Border(left: BorderSide(color: Colors.grey[300]!, width: 1)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Container(
+            padding: EdgeInsets.all(AppTheme.paddingMedium),
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(color: Colors.grey[300]!, width: 1),
+              ),
+            ),
+            child: Row(
+              children: [
+                Text(
+                  'Varukorg',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                Spacer(),
+                IconButton(
+                  tooltip: 'Töm varukorg',
+                  onPressed: () {
+                    showDialog(context: context, builder: (context) => AlertDialog(
+                      title: Text('Töm varukorg'),
+                      content: Text('Är du säker på att du vill tömma varukorgen?'),
+                      actions: [
+                        ElevatedButton(
+                          onPressed: () {
+                            context.read<ImatDataHandler>().shoppingCartClear();
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.colorScheme.primary,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: Text('Ja'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('Avbryt'),
+                        ),
+                      ],
+                    ));
+                  },
+                  icon: Icon(Icons.delete),
+                ),
+              ],
+            ),
+          ),
+          Consumer<ImatDataHandler>(
+            builder: (context, iMat, child) {
+              final cart = iMat.getShoppingCart();
+              if (cart.items.isEmpty) {
+                return Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.shopping_cart_outlined,
+                          size: 48,
+                          color: Colors.grey[400],
+                        ),
+                        SizedBox(height: AppTheme.paddingMedium),
+                        Text(
+                          'Inga varor i varukorgen än!',
+                          style: TextStyle(color: Colors.grey[600]),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+              return Expanded(
+                child: ListView.builder(
+                  itemCount: cart.items.length,
+                  itemBuilder: (context, index) {
+                    final item = cart.items[index];
+                    return Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(AppTheme.paddingMedium),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[200],
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: iMat.getImage(item.product),
+                              ),
+                            ),
+                            SizedBox(width: AppTheme.paddingMedium),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.product.name,
+                                    style: Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                  Text(
+                                    '${item.total.toStringAsFixed(2)} kr',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleSmall
+                                        ?.copyWith(color: Colors.grey[600]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Row(
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    Icons.delete,
+                                    color: Colors.red[300],
+                                  ),
+                                  onPressed: () => iMat.shoppingCartRemove(item),
+                                ),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100],
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(Icons.remove),
+                                        onPressed: () => iMat.shoppingCartUpdate(
+                                          item,
+                                          delta: -1,
+                                        ),
+                                      ),
+                                      Container(
+                                        width: 40,
+                                        height: 40,
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          item.amount.toString(),
+                                          style: Theme.of(context).textTheme.titleMedium,
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: Icon(Icons.add),
+                                        onPressed: () => iMat.shoppingCartUpdate(
+                                          item,
+                                          delta: 1,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+          Container(
+            padding: EdgeInsets.all(AppTheme.paddingMedium),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(color: Colors.grey[300]!, width: 1),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Total:', style: Theme.of(context).textTheme.titleMedium),
+                Consumer<ImatDataHandler>(
+                  builder: (context, iMat, child) {
+                    return Text(
+                      '${iMat.shoppingCartTotal().toStringAsFixed(2)} kr',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(AppTheme.paddingMedium),
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CheckoutView()),
+                );
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.colorScheme.primary,
+                foregroundColor: Colors.white,
+                fixedSize: Size(double.infinity, 50),
+                padding: EdgeInsets.symmetric(vertical: AppTheme.paddingMedium),
+              ),
+              child: Text('Till kassan'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+} 
