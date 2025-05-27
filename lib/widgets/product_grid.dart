@@ -19,10 +19,9 @@ class ProductGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 300,
-        childAspectRatio: 10/11,
+        mainAxisExtent: 328,
         crossAxisSpacing: AppTheme.paddingMedium,
         mainAxisSpacing: AppTheme.paddingMedium,
       ),
@@ -58,6 +57,7 @@ class ProductCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             ProductImage(product: product),
+            Spacer(),
             ProductText(product: product),
           ],
         ),
@@ -136,7 +136,10 @@ class ProductImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return context.read<ImatDataHandler>().getImage(product);
+    return AspectRatio(
+      aspectRatio: 4/3,
+      child: context.read<ImatDataHandler>().getImage(product),
+    );
   }
 }
 

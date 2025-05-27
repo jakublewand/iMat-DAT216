@@ -26,42 +26,56 @@ class MainView extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    children: [
-                      CategoryFilter(),
-                      Expanded(
-                        child: SingleChildScrollView(
-                          padding: EdgeInsets.all(AppTheme.paddingMedium),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Text(
-                              //   'Erbjudanden',
-                              //   style: Theme.of(context).textTheme.headlineMedium,
-                              // ),
-                              // SizedBox(height: AppTheme.paddingMedium),
-                              // ProductGrid(
-                              //   products: products.take(8).toList(),
-                              // ),
-                              // SizedBox(height: AppTheme.paddingLarge),
-                              Text(
-                                'Produkter',
-                                style: Theme.of(context).textTheme.headlineMedium,
-                              ),
-                              SizedBox(height: AppTheme.paddingMedium),
-                              ProductGrid(
-                                products: products.toList(),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                MainContent(products: products),
                 ShoppingCart(),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class MainContent extends StatelessWidget {
+  const MainContent({
+    super.key,
+    required this.products,
+  });
+
+  final List<Product> products;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        children: [
+          CategoryFilter(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(AppTheme.paddingMedium),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Text(
+                  //   'Erbjudanden',
+                  //   style: Theme.of(context).textTheme.headlineMedium,
+                  // ),
+                  // SizedBox(height: AppTheme.paddingMedium),
+                  // ProductGrid(
+                  //   products: products.take(8).toList(),
+                  // ),
+                  // SizedBox(height: AppTheme.paddingLarge),
+                  Text(
+                    'Produkter',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                  ),
+                  SizedBox(height: AppTheme.paddingMedium),
+                  ProductGrid(
+                    products: products.toList(),
+                  ),
+                ],
+              ),
             ),
           ),
         ],

@@ -486,15 +486,6 @@ import 'package:http/http.dart' as http;
     return _imageData[url];
   }
 
-  /// Students can use this to get an Image widget
-  Image? _getImage(String url, {BoxFit? fit}) {
-    final bytes = _getImageData(url);
-    if (bytes != null) {
-      return Image.memory(bytes, fit: fit);
-    }
-    return null;
-  }
-
   void _triggerLoadIfNeeded(String url) {
     if (_imageData.containsKey(url) ||
         _loadingUrls.contains(url) ||

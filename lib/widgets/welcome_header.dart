@@ -8,11 +8,12 @@ class WelcomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var name = context.read<ImatDataHandler>().getCustomer().firstName;
     return Container(
       padding: EdgeInsets.all(AppTheme.paddingLarge),
       color: AppTheme.colorScheme.primary,
       child: Text(
-        'Välkommen ${context.read<ImatDataHandler>().getCustomer().firstName}!',
+        name.isEmpty ? 'Välkommen!' : 'Välkommen $name!',
         style: TextStyle(
           color: Colors.white,
           fontSize: 24,
