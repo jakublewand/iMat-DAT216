@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat_data_handler.dart';
+import 'package:imat/widgets/product_lightbox.dart';
 import 'package:provider/provider.dart';
 import 'package:imat/model/imat/shopping_item.dart';
 import 'dart:math';
@@ -20,7 +21,7 @@ class MainView extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildWelcomeHeader(),
+          _buildWelcomeHeader(context),
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,12 +73,12 @@ class MainView extends StatelessWidget {
     );
   }
 
-  Widget _buildWelcomeHeader() {
+  Widget _buildWelcomeHeader(BuildContext context) {
     return Container(
       padding: EdgeInsets.all(AppTheme.paddingLarge),
       color: AppTheme.colorScheme.primary,
       child: Text(
-        'Välkommen Kerstin!',
+        'Välkommen ${context.read<ImatDataHandler>().getCustomer().firstName}!',
         style: TextStyle(
           color: Colors.white,
           fontSize: 24,
@@ -145,73 +146,83 @@ class MainView extends StatelessWidget {
       itemBuilder: (context, index) {
         final product = products[index];
         return Card(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Stack(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      child: context.read<ImatDataHandler>().getImage(product),
-                    ),
-                    if (product.isEcological)
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: Container(
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.green,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Icon(Icons.eco, color: Colors.white, size: 16),
-                        ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: () {
+              // Show detail modal
+              showModalBottomSheet(
+                context: context,
+                builder: (context) => ProductLightbox(product: product),
+              );
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: Stack(
+                    children: [
+                      Container(
+                        width: double.infinity,
+                        height: double.infinity,
+                        child: context.read<ImatDataHandler>().getImage(product),
                       ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(AppTheme.paddingSmall),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product.name,
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    Text(
-                      '${product.price} kr per ${product.unit}',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    SizedBox(height: AppTheme.paddingSmall),
-                    Row(
-                      children: [
-                        Text(
-                          '${product.price} kr',
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        Spacer(),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            context.read<ImatDataHandler>().shoppingCartAdd(
-                              ShoppingItem(product, amount: 1),
-                            );
-                          },
-                          icon: Icon(Icons.add),
-                          label: Text('Köp'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.colorScheme.primary,
-                            foregroundColor: Colors.white,
+                      if (product.isEcological)
+                        Positioned(
+                          top: 8,
+                          right: 8,
+                          child: Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Icon(Icons.eco, color: Colors.white, size: 16),
                           ),
                         ),
-                      ],
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            ],
+                Padding(
+                  padding: EdgeInsets.all(AppTheme.paddingSmall),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.name,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Text(
+                        '${product.price} kr per ${product.unit}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      SizedBox(height: AppTheme.paddingSmall),
+                      Row(
+                        children: [
+                          Text(
+                            '${product.price} kr',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          Spacer(),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              context.read<ImatDataHandler>().shoppingCartAdd(
+                                ShoppingItem(product, amount: 1),
+                              );
+                            },
+                            icon: Icon(Icons.add),
+                            label: Text('Köp'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.colorScheme.primary,
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -237,9 +248,44 @@ class MainView extends StatelessWidget {
                 bottom: BorderSide(color: Colors.grey[300]!, width: 1),
               ),
             ),
-            child: Text(
-              'Varukorg',
-              style: Theme.of(context).textTheme.titleLarge,
+            child: Row(
+              children: [
+                Text(
+                  'Varukorg',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                Spacer(),
+                IconButton(
+                  tooltip: 'Töm varukorg',
+                  onPressed: () {
+                    showDialog(context: context, builder: (context) => AlertDialog(
+                      title: Text('Töm varukorg'),
+                      content: Text('Är du säker på att du vill tömma varukorgen?'),
+                      actions: [
+                        ElevatedButton(
+                          onPressed: () {
+                            context.read<ImatDataHandler>().shoppingCartClear();
+                            Navigator.pop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.colorScheme.primary,
+                            foregroundColor: Colors.white,
+                          ),
+                            child: Text('Ja'),
+                          ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text('Avbryt'),
+                      ),
+                    ],
+                  ),
+                  );
+                  },
+                  icon: Icon(Icons.delete),
+                ),
+              ],
             ),
           ),
           Consumer<ImatDataHandler>(
@@ -401,6 +447,7 @@ class MainView extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.colorScheme.primary,
                 foregroundColor: Colors.white,
+                fixedSize: Size(double.infinity, 50),
                 padding: EdgeInsets.symmetric(vertical: AppTheme.paddingMedium),
               ),
               child: Text('Till kassan'),

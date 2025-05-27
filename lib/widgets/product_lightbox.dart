@@ -16,23 +16,22 @@ class ProductLightbox extends StatelessWidget {
     var iMat = Provider.of<ImatDataHandler>(context, listen: false);
     ProductDetail? detail = iMat.getDetail(product);
 
-    return Dialog(
-      child: Container(
-        width: 600,
-        height: 500,
-        padding: EdgeInsets.all(AppTheme.paddingMedium),
-        child: Column(
-          children: [
-            _header(context),
-            SizedBox(height: AppTheme.paddingMedium),
-            Expanded(
+    return Container(
+      padding: EdgeInsets.all(AppTheme.paddingMedium),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _header(context),
+          SizedBox(height: AppTheme.paddingMedium),
+          Flexible(
+            child: SingleChildScrollView(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Product image
-                  Container(
-                    width: 200,
-                    height: 200,
+                  SizedBox(
+                    width: double.infinity,
+                    height: 300,
                     child: iMat.getImage(product),
                   ),
                   SizedBox(height: AppTheme.paddingMedium),
@@ -75,8 +74,8 @@ class ProductLightbox extends StatelessWidget {
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -128,8 +127,12 @@ class ProductLightbox extends StatelessWidget {
 
   // Static method to show the lightbox
   static void show(BuildContext context, Product product) {
-    showDialog(
+    showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
       builder: (BuildContext context) {
         return ProductLightbox(product: product);
       },
