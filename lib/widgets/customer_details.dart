@@ -13,6 +13,7 @@ class CustomerDetails extends StatefulWidget {
 }
 
 class _CustomerDetailsState extends State<CustomerDetails> {
+  final _formKey = GlobalKey<FormState>();
   late final TextEditingController _firstNameController;
   late final TextEditingController _lastNameController;
   late final TextEditingController _mobileNumberController;
@@ -31,9 +32,7 @@ class _CustomerDetailsState extends State<CustomerDetails> {
 
     _firstNameController = TextEditingController(text: customer.firstName);
     _lastNameController = TextEditingController(text: customer.lastName);
-    _mobileNumberController = TextEditingController(
-      text: customer.mobilePhoneNumber,
-    );
+    _mobileNumberController = TextEditingController(text: customer.mobilePhoneNumber);
     _emailController = TextEditingController(text: customer.email);
     _addressController = TextEditingController(text: customer.address);
     _postCodeController = TextEditingController(text: customer.postCode);
@@ -41,60 +40,189 @@ class _CustomerDetailsState extends State<CustomerDetails> {
   }
 
   @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _mobileNumberController.dispose();
+    _emailController.dispose();
+    _addressController.dispose();
+    _postCodeController.dispose();
+    _postAddressController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        TextField(
-          controller: _firstNameController,
-          decoration: InputDecoration(labelText: 'Förnamn'),
-        ),
-        TextField(
-          controller: _lastNameController,
-          decoration: InputDecoration(labelText: 'Efternamn'),
-        ),
-        TextField(
-          controller: _mobileNumberController,
-          decoration: InputDecoration(labelText: 'Mobilnummer'),
-        ),
-        TextField(
-          controller: _emailController,
-          decoration: InputDecoration(labelText: 'E-post'),
-        ),
-        TextField(
-          controller: _addressController,
-          decoration: InputDecoration(labelText: 'Adress'),
-        ),
-        TextField(
-          controller: _postCodeController,
-          decoration: InputDecoration(labelText: 'Postnummer'),
-        ),
-        TextField(
-          controller: _postAddressController,
-          decoration: InputDecoration(labelText: 'Ort'),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ElevatedButton(onPressed: _saveCustomer, child: Text('Spara')),
+            Text(
+              'Kunduppgifter',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 16),
+            TextFormField(
+              controller: _firstNameController,
+              decoration: const InputDecoration(
+                labelText: 'Förnamn',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.person),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Vänligen ange ditt förnamn';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _lastNameController,
+              decoration: const InputDecoration(
+                labelText: 'Efternamn',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.person_outline),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Vänligen ange ditt efternamn';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _mobileNumberController,
+              decoration: const InputDecoration(
+                labelText: 'Mobilnummer',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.phone_android),
+              ),
+              keyboardType: TextInputType.phone,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Vänligen ange ditt mobilnummer';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: 'E-post',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.email),
+              ),
+              keyboardType: TextInputType.emailAddress,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Vänligen ange din e-postadress';
+                }
+                if (!value.contains('@')) {
+                  return 'Vänligen ange en giltig e-postadress';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _addressController,
+              decoration: const InputDecoration(
+                labelText: 'Adress',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.home),
+              ),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Vänligen ange din adress';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: TextFormField(
+                    controller: _postCodeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Postnummer',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.local_post_office),
+                    ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Vänligen ange postnummer';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  flex: 3,
+                  child: TextFormField(
+                    controller: _postAddressController,
+                    decoration: const InputDecoration(
+                      labelText: 'Ort',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.location_city),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Vänligen ange ort';
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: _saveCustomer,
+              icon: const Icon(Icons.save),
+              label: const Text('Spara uppgifter'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            ),
           ],
         ),
-      ],
+      ),
     );
   }
 
-  _saveCustomer() {
-    //var iMat = Provider.of<ImatDataHandler>(context, listen: false);
-    Customer customer = _imatDataHandler.getCustomer();
+  void _saveCustomer() {
+    if (_formKey.currentState!.validate()) {
+      Customer customer = _imatDataHandler.getCustomer();
 
-    customer.firstName = _firstNameController.text;
-    customer.lastName = _lastNameController.text;
-    customer.mobilePhoneNumber = _mobileNumberController.text;
-    customer.email = _emailController.text;
-    customer.address = _addressController.text;
-    customer.postCode = _postCodeController.text;
-    customer.postAddress = _postAddressController.text;
+      customer.firstName = _firstNameController.text;
+      customer.lastName = _lastNameController.text;
+      customer.mobilePhoneNumber = _mobileNumberController.text;
+      customer.email = _emailController.text;
+      customer.address = _addressController.text;
+      customer.postCode = _postCodeController.text;
+      customer.postAddress = _postAddressController.text;
 
-    // This is needed to trigger updates to the server
-    _imatDataHandler.setCustomer(customer);
+      _imatDataHandler.setCustomer(customer);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Kunduppgifter sparade'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat_data_handler.dart';
@@ -21,7 +22,7 @@ class ProductGrid extends StatelessWidget {
       physics: NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
         maxCrossAxisExtent: 300,
-        childAspectRatio: 1,
+        childAspectRatio: 10/11,
         crossAxisSpacing: AppTheme.paddingMedium,
         mainAxisSpacing: AppTheme.paddingMedium,
       ),
@@ -135,20 +136,7 @@ class ProductImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        width: double.infinity,
-        height: double.infinity,
-        child: ClipRect(
-          child: OverflowBox(
-            alignment: Alignment.center,
-            maxWidth: double.infinity,
-            maxHeight: double.infinity,
-            child: context.read<ImatDataHandler>().getImage(product),
-          ),
-        ),
-      ),
-    );
+    return context.read<ImatDataHandler>().getImage(product);
   }
 }
 
