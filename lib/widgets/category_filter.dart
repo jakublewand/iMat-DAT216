@@ -9,17 +9,35 @@ class CategoryFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final categories = [
-      MapEntry('Alla kategorier', null),
-      MapEntry('Exotiska Frukter', ProductCategory.EXOTIC_FRUIT),
-      MapEntry('Citrusfrukter', ProductCategory.CITRUS_FRUIT),
-      MapEntry('Bär', ProductCategory.BERRY),
-      MapEntry('Bröd', ProductCategory.BREAD),
-      MapEntry('Kål', ProductCategory.CABBAGE),
-      MapEntry('Kalla Drycker', ProductCategory.COLD_DRINKS),
-      MapEntry('Mejeri', ProductCategory.DAIRIES),
-      MapEntry('Frukter', ProductCategory.FRUIT),
-    ];
+    // Mapping from display names to lists of ProductCategory enum values
+    final categoryBuckets = {
+      'Alla kategorier': <ProductCategory?>[null],
+      'Bär': [ProductCategory.BERRY],
+      'Frukter': [
+        ProductCategory.FRUIT, 
+        ProductCategory.CITRUS_FRUIT, 
+        ProductCategory.EXOTIC_FRUIT, 
+        ProductCategory.MELONS
+      ],
+      'Mejeri': [ProductCategory.DAIRIES],
+      'Dricka': [ProductCategory.COLD_DRINKS, ProductCategory.HOT_DRINKS],
+      'Grönsaker': [
+        ProductCategory.VEGETABLE_FRUIT, 
+        ProductCategory.ROOT_VEGETABLE, 
+        ProductCategory.CABBAGE, 
+        ProductCategory.POD
+      ],
+      'Kött': [ProductCategory.MEAT, ProductCategory.FISH],
+      'Bakning': [
+        ProductCategory.BREAD, 
+        ProductCategory.FLOUR_SUGAR_SALT, 
+        ProductCategory.PASTA, 
+        ProductCategory.POTATO_RICE
+      ],
+      'Örter': [ProductCategory.HERB],
+      'Nötter och frön': [ProductCategory.NUTS_AND_SEEDS],
+      'Övrigt': [ProductCategory.SWEET],
+    };
 
     final iMatDataHandler = context.watch<ImatDataHandler>();
     final currentCategory = iMatDataHandler.currentCategoryFilter?.category;
@@ -29,24 +47,36 @@ class CategoryFilter extends StatelessWidget {
         vertical: AppTheme.paddingMedium,
         horizontal: AppTheme.paddingLarge,
       ),
-      child: Wrap(
-        spacing: AppTheme.paddingSmall,
-        runSpacing: AppTheme.paddingSmall,
-        children: categories.map((category) {
-          return FilterChip(
-            label: Text(category.key),
-            selected: currentCategory == category.value,
-            onSelected: (bool selected) {
-              if (selected) {
-                if (category.value == null) {
-                  context.read<ImatDataHandler>().selectAllProducts();
-                } else {
-                  context.read<ImatDataHandler>().selectCategory(category.value!);
-                }
-              }
-            },
-          );
-        }).toList(),
+      child: Row(
+        spacing: AppTheme.paddingMedium,
+        children: [
+          Text('Filtrera på:'),
+          Wrap(
+            spacing: AppTheme.paddingSmall,
+            runSpacing: AppTheme.paddingSmall,
+            children: categoryBuckets.entries.map((bucket) {
+              final isSelected = bucket.value.contains(null) 
+                  ? currentCategory == null
+                  : bucket.value.contains(currentCategory);
+              
+              return FilterChip(
+                label: Text(bucket.key),
+                selected: isSelected,
+                onSelected: (bool selected) {
+                  if (selected) {
+                    if (bucket.value.contains(null)) {
+                      context.read<ImatDataHandler>().selectAllProducts();
+                    } else {
+                      // For now, select the first category in the bucket
+                      // This might need to be updated based on how your data handler works
+                      context.read<ImatDataHandler>().selectCategory(bucket.value.first!);
+                    }
+                  }
+                },
+              );
+            }).toList(),
+          ),
+        ],
       ),
     );
   }
