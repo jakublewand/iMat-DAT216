@@ -14,33 +14,32 @@ class CategoryFilter extends StatelessWidget {
       'Alla kategorier': <ProductCategory?>[null],
       'Bär': [ProductCategory.BERRY],
       'Frukter': [
-        ProductCategory.FRUIT, 
-        ProductCategory.CITRUS_FRUIT, 
-        ProductCategory.EXOTIC_FRUIT, 
-        ProductCategory.MELONS
+        ProductCategory.FRUIT,
+        ProductCategory.CITRUS_FRUIT,
+        ProductCategory.EXOTIC_FRUIT,
+        ProductCategory.MELONS,
       ],
       'Mejeri': [ProductCategory.DAIRIES],
       'Dricka': [ProductCategory.COLD_DRINKS, ProductCategory.HOT_DRINKS],
       'Grönsaker': [
-        ProductCategory.VEGETABLE_FRUIT, 
-        ProductCategory.ROOT_VEGETABLE, 
-        ProductCategory.CABBAGE, 
-        ProductCategory.POD
+        ProductCategory.VEGETABLE_FRUIT,
+        ProductCategory.ROOT_VEGETABLE,
+        ProductCategory.CABBAGE,
+        ProductCategory.POD,
       ],
-      'Kött': [ProductCategory.MEAT, ProductCategory.FISH],
-      'Bakning': [
-        ProductCategory.BREAD, 
-        ProductCategory.FLOUR_SUGAR_SALT, 
-        ProductCategory.PASTA, 
-        ProductCategory.POTATO_RICE
+      'Kött & fisk': [ProductCategory.MEAT, ProductCategory.FISH],
+      'Skafferi': [
+        ProductCategory.BREAD,
+        ProductCategory.PASTA,
+        ProductCategory.POTATO_RICE,
+        ProductCategory.NUTS_AND_SEEDS,
+        ProductCategory.FLOUR_SUGAR_SALT
       ],
       'Örter': [ProductCategory.HERB],
-      'Nötter och frön': [ProductCategory.NUTS_AND_SEEDS],
-      'Övrigt': [ProductCategory.SWEET],
+      'Sötsaker': [ProductCategory.SWEET],
     };
 
     final iMatDataHandler = context.watch<ImatDataHandler>();
-    final currentCategory = iMatDataHandler.currentCategoryFilter?.category;
     final isSearchActive = iMatDataHandler.isSearchActive;
 
     return Container(
@@ -55,32 +54,44 @@ class CategoryFilter extends StatelessWidget {
           Wrap(
             spacing: AppTheme.paddingSmall,
             runSpacing: AppTheme.paddingSmall,
-            children: categoryBuckets.entries.map((bucket) {
-              final isSelected = isSearchActive 
-                  ? bucket.key == 'Alla kategorier'  // When search is active, only "Alla kategorier" appears selected
-                  : bucket.value.contains(null) 
-                      ? currentCategory == null
-                      : bucket.value.contains(currentCategory);
-              
-              return FilterChip(
-                label: Text(bucket.key),
-                selected: isSelected,
-                onSelected: (bool selected) {
-                  if (selected) {
-                    if (bucket.value.contains(null)) {
-                      context.read<ImatDataHandler>().selectAllProducts();
-                    } else {
-                      // For now, select the first category in the bucket
-                      // This might need to be updated based on how your data handler works
-                      context.read<ImatDataHandler>().selectCategory(bucket.value.first!);
-                    }
-                  }
-                },
-              );
-            }).toList(),
+            children:
+                categoryBuckets.entries.map((bucket) {
+                  final isSelected =
+                      isSearchActive
+                          ? bucket.key ==
+                              'Alla kategorier' // When search is active, only "Alla kategorier" appears selected
+                          : bucket.value.contains(null)
+                          ? iMatDataHandler
+                              .activeCategories
+                              .isEmpty // "Alla kategorier" is selected when no categories are active
+                          : iMatDataHandler.areCategoriesActive(
+                            bucket.value.whereType<ProductCategory>().toList(),
+                          );
+
+                  return FilterChip(
+                    label: Text(bucket.key),
+                    selected: isSelected,
+                    onSelected: (bool selected) {
+                      if (selected) {
+                        if (bucket.value.contains(null)) {
+                          context.read<ImatDataHandler>().selectAllProducts();
+                        } else {
+                          // Select all categories in the bucket
+                          final categories =
+                              bucket.value
+                                  .whereType<ProductCategory>()
+                                  .toList();
+                          context.read<ImatDataHandler>().selectCategories(
+                            categories,
+                          );
+                        }
+                      }
+                    },
+                  );
+                }).toList(),
           ),
         ],
       ),
     );
   }
-} 
+}

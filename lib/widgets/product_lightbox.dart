@@ -50,6 +50,12 @@ class ProductLightbox extends StatelessWidget {
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
 
+                  // Product category
+                  Text(
+                    product.category.name,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+
                   // Product brand and description
                   if (detail != null) ...[
                     SizedBox(height: AppTheme.paddingSmall),

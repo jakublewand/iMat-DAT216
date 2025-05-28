@@ -75,6 +75,35 @@ class CategoryFilter extends ProductFilter {
   int _getHashCode() => category.hashCode;
 }
 
+/// Filter products by multiple categories (OR logic)
+class MultipleCategoryFilter extends ProductFilter {
+  final List<ProductCategory> categories;
+  
+  MultipleCategoryFilter(this.categories);
+  
+  @override
+  List<Product> apply(List<Product> products) {
+    if (categories.isEmpty) return products;
+    
+    return products.where((product) => 
+        categories.contains(product.category)
+    ).toList();
+  }
+  
+  @override
+  String get description => 'Categories: ${categories.map((c) => c.name).join(", ")}';
+  
+  @override
+  bool _isEqual(Object other) {
+    return other is MultipleCategoryFilter && 
+           other.categories.length == categories.length &&
+           other.categories.toSet().containsAll(categories.toSet());
+  }
+  
+  @override
+  int _getHashCode() => categories.fold(0, (prev, cat) => prev ^ cat.hashCode);
+}
+
 /// Filter to show only favorite products
 class FavoritesFilter extends ProductFilter {
   final Set<int> favoriteProductIds;

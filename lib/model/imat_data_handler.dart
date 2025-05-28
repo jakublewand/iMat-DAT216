@@ -47,6 +47,27 @@ class ImatDataHandler extends ChangeNotifier {
   CategoryFilter? get currentCategoryFilter => 
       _filters.whereType<CategoryFilter>().firstOrNull;
 
+  // Get all active category filters (including multiple category filters)
+  List<CategoryFilter> get activeCategoryFilters => 
+      _filters.whereType<CategoryFilter>().toList();
+
+  // Get the current multiple category filter if one exists
+  MultipleCategoryFilter? get currentMultipleCategoryFilter => 
+      _filters.whereType<MultipleCategoryFilter>().firstOrNull;
+
+  // Get all active category types
+  List<ProductCategory> get activeCategories {
+    final singleCategories = activeCategoryFilters.map((filter) => filter.category).toList();
+    final multipleCategories = currentMultipleCategoryFilter?.categories ?? [];
+    return [...singleCategories, ...multipleCategories];
+  }
+
+  // Check if any of the given categories are currently active
+  bool areCategoriesActive(List<ProductCategory> categories) {
+    final activeSet = activeCategories.toSet();
+    return categories.any((category) => activeSet.contains(category));
+  }
+
   // Get the current search filter if one exists
   SearchFilter? get currentSearchFilter => 
       _filters.whereType<SearchFilter>().firstOrNull;
@@ -70,8 +91,8 @@ class ImatDataHandler extends ChangeNotifier {
     // Remove any existing filter of the same type for search and category
     if (filter is SearchFilter) {
       _filters.removeWhere((f) => f is SearchFilter);
-    } else if (filter is CategoryFilter) {
-      _filters.removeWhere((f) => f is CategoryFilter);
+    } else if (filter is CategoryFilter || filter is MultipleCategoryFilter) {
+      _filters.removeWhere((f) => f is CategoryFilter || f is MultipleCategoryFilter);
     } else if (filter is FavoritesFilter) {
       _filters.removeWhere((f) => f is FavoritesFilter);
     }
@@ -88,7 +109,12 @@ class ImatDataHandler extends ChangeNotifier {
 
   // Remove all filters of a specific type
   void removeFiltersOfType<T extends ProductFilter>() {
-    _filters.removeWhere((filter) => filter is T);
+    if (T == CategoryFilter) {
+      // Remove both CategoryFilter and MultipleCategoryFilter when removing category filters
+      _filters.removeWhere((filter) => filter is CategoryFilter || filter is MultipleCategoryFilter);
+    } else {
+      _filters.removeWhere((filter) => filter is T);
+    }
     notifyListeners();
   }
 
@@ -127,7 +153,20 @@ class ImatDataHandler extends ChangeNotifier {
     removeFiltersOfType<SearchFilter>();
     // Clear the search field UI
     _onSearchClear?.call();
+    // Clear any existing category filters (both single and multiple)
+    _filters.removeWhere((filter) => filter is CategoryFilter || filter is MultipleCategoryFilter);
     addFilter(CategoryFilter(category));
+  }
+
+  // Filter by multiple categories (for category buckets)
+  void selectCategories(List<ProductCategory> categories) {
+    // Clear search filters when selecting categories
+    removeFiltersOfType<SearchFilter>();
+    // Clear the search field UI
+    _onSearchClear?.call();
+    
+    // Use MultipleCategoryFilter for OR logic
+    addFilter(MultipleCategoryFilter(categories));
   }
 
   // Filter by search term
@@ -135,8 +174,8 @@ class ImatDataHandler extends ChangeNotifier {
     if (searchTerm.isEmpty) {
       removeFiltersOfType<SearchFilter>();
     } else {
-      // Clear category filters when searching
-      removeFiltersOfType<CategoryFilter>();
+      // Clear category filters when searching (both single and multiple)
+      _filters.removeWhere((filter) => filter is CategoryFilter || filter is MultipleCategoryFilter);
       addFilter(SearchFilter(searchTerm));
     }
   }
