@@ -105,23 +105,148 @@ class _HistoryViewState extends State<HistoryView> {
   // which is a what to use to create an empty widget.
   Widget _orderDetails(Order? order) {
     if (order != null) {
-      return Column(
-        children: [
-          Text(
-            'Order ${order.orderNumber}',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          SizedBox(height: AppTheme.paddingSmall),
-          for (final item in order.items)
-            Text('${item.product.name}, ${item.amount}'),
-          SizedBox(height: AppTheme.paddingSmall),
-          Text(
-            'Totalt: ${order.getTotal().toStringAsFixed(2)}kr',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-        ],
+      var iMat = Provider.of<ImatDataHandler>(context, listen: false);
+      
+      return Padding(
+        padding: EdgeInsets.all(AppTheme.paddingMedium),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header section - fixed at top
+            Text(
+              'Order ${order.orderNumber}',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            SizedBox(height: AppTheme.paddingSmall),
+            Text(
+              'Beställd: ${_formatDateTime(order.date)}',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Colors.grey[600],
+              ),
+            ),
+            SizedBox(height: AppTheme.paddingMedium),
+            Text(
+              'Produkter:',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            SizedBox(height: AppTheme.paddingSmall),
+            
+            // Scrollable items section
+            Expanded(
+              child: ListView.builder(
+                itemCount: order.items.length,
+                itemBuilder: (context, index) {
+                  final item = order.items[index];
+                  return Card(
+                    margin: EdgeInsets.only(bottom: AppTheme.paddingSmall),
+                    child: Padding(
+                      padding: EdgeInsets.all(AppTheme.paddingMedium),
+                      child: Row(
+                        children: [
+                          // Product image
+                          Container(
+                            width: 60,
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Colors.grey[200],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: iMat.getImage(item.product),
+                            ),
+                          ),
+                          SizedBox(width: AppTheme.paddingMedium),
+                          
+                          // Product details
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  item.product.name,
+                                  style: Theme.of(context).textTheme.titleSmall,
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  '${item.product.price} kr per ${item.product.unit}',
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Antal: ${item.amount}',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                ),
+                              ],
+                            ),
+                          ),
+                          
+                          // Item total
+                          Text(
+                            '${item.total.toStringAsFixed(2)} kr',
+                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            
+            // Total section - fixed at bottom
+            Container(
+              padding: EdgeInsets.symmetric(vertical: AppTheme.paddingMedium),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: Colors.grey[300]!, width: 1),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Totalt:',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    '${order.getTotal().toStringAsFixed(2)} kr',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.secondaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       );
     }
-    return SizedBox.shrink();
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.receipt_long,
+            size: 64,
+            color: Colors.grey[400],
+          ),
+          SizedBox(height: AppTheme.paddingMedium),
+          Text(
+            'Välj en beställning för att se detaljer',
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: Colors.grey[600],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
