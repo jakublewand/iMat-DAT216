@@ -181,16 +181,23 @@ class AppNavbar extends StatelessWidget {
           content: Text('Är du säker på att du vill logga ut?'),
           actions: [
             TextButton(
+              style: TextButton.styleFrom(
+                foregroundColor: AppTheme.secondaryColor,
+              ),
               onPressed: () => Navigator.pop(context),
-              child: Text('Avbryt', style: TextStyle(color: AppTheme.accentColor),),
+              child: Text('Avbryt'),
             ),
-            TextButton(
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                foregroundColor: AppTheme.secondaryColor,
+                backgroundColor: AppTheme.primaryColor,
+              ),
               onPressed: () {
                 iMat.logout();
                 Navigator.pop(context);
                 Navigator.popUntil(context, (route) => route.isFirst);
               },
-              child: Text('Logga ut', style: TextStyle(color: AppTheme.primaryColor),),
+              child: Text('Logga ut'),
 
             ),
           ],
