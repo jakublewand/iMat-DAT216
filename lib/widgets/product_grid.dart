@@ -49,6 +49,7 @@ class ProductCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           showModalBottomSheet(
+            isScrollControlled: true,
             context: context,
             builder: (context) => ProductLightbox(product: product),
           );
