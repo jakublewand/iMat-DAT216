@@ -7,8 +7,34 @@ import 'package:imat/pages/login_view.dart';
 import 'package:imat/pages/main_view.dart';
 import 'package:provider/provider.dart';
 
-class AppNavbar extends StatelessWidget {
+class AppNavbar extends StatefulWidget {
   const AppNavbar({super.key});
+
+  @override
+  State<AppNavbar> createState() => _AppNavbarState();
+}
+
+class _AppNavbarState extends State<AppNavbar> {
+  late final TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+    
+    // Register callback to clear search field when category is selected
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ImatDataHandler>().setSearchClearCallback(() {
+        _searchController.clear();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +76,7 @@ class AppNavbar extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: TextField(
+                controller: _searchController,
                 textAlignVertical: TextAlignVertical.center,
                 decoration: InputDecoration(
                   hintText: 'Sök',

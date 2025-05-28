@@ -47,6 +47,13 @@ class ImatDataHandler extends ChangeNotifier {
   CategoryFilter? get currentCategoryFilter => 
       _filters.whereType<CategoryFilter>().firstOrNull;
 
+  // Get the current search filter if one exists
+  SearchFilter? get currentSearchFilter => 
+      _filters.whereType<SearchFilter>().firstOrNull;
+
+  // Check if search is currently active
+  bool get isSearchActive => currentSearchFilter != null;
+
   // Apply filters to get the current product selection
   List<Product> _getFilteredProducts() {
     List<Product> result = List.from(_products);
@@ -96,6 +103,8 @@ class ImatDataHandler extends ChangeNotifier {
   // Show all products (clear all filters)
   void selectAllProducts() {
     clearAllFilters();
+    // Clear the search field UI
+    _onSearchClear?.call();
   }
 
   // Show only favorite products
@@ -104,8 +113,20 @@ class ImatDataHandler extends ChangeNotifier {
     addFilter(FavoritesFilter(favoriteIds));
   }
 
+  // Callback for when search field should be cleared
+  VoidCallback? _onSearchClear;
+  
+  // Set callback for clearing search field
+  void setSearchClearCallback(VoidCallback? callback) {
+    _onSearchClear = callback;
+  }
+
   // Filter by category
   void selectCategory(ProductCategory category) {
+    // Clear search filters when selecting a category
+    removeFiltersOfType<SearchFilter>();
+    // Clear the search field UI
+    _onSearchClear?.call();
     addFilter(CategoryFilter(category));
   }
 
@@ -114,6 +135,8 @@ class ImatDataHandler extends ChangeNotifier {
     if (searchTerm.isEmpty) {
       removeFiltersOfType<SearchFilter>();
     } else {
+      // Clear category filters when searching
+      removeFiltersOfType<CategoryFilter>();
       addFilter(SearchFilter(searchTerm));
     }
   }

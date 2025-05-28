@@ -41,6 +41,7 @@ class CategoryFilter extends StatelessWidget {
 
     final iMatDataHandler = context.watch<ImatDataHandler>();
     final currentCategory = iMatDataHandler.currentCategoryFilter?.category;
+    final isSearchActive = iMatDataHandler.isSearchActive;
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -55,9 +56,11 @@ class CategoryFilter extends StatelessWidget {
             spacing: AppTheme.paddingSmall,
             runSpacing: AppTheme.paddingSmall,
             children: categoryBuckets.entries.map((bucket) {
-              final isSelected = bucket.value.contains(null) 
-                  ? currentCategory == null
-                  : bucket.value.contains(currentCategory);
+              final isSelected = isSearchActive 
+                  ? bucket.key == 'Alla kategorier'  // When search is active, only "Alla kategorier" appears selected
+                  : bucket.value.contains(null) 
+                      ? currentCategory == null
+                      : bucket.value.contains(currentCategory);
               
               return FilterChip(
                 label: Text(bucket.key),
