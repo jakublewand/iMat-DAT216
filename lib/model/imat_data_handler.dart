@@ -291,34 +291,83 @@ class ImatDataHandler extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Cache for Image widgets to avoid recreating them
+  final Map<int, Widget> _imageWidgetCache = {};
+  
+  // Maximum number of cached image widgets to prevent memory issues
+  static const int _maxImageWidgetCache = 50;
+
+  // Preload images for the first N products to improve initial loading
+  void preloadInitialImages({int count = 20}) {
+    final productsToPreload = _products.take(count);
+    for (final product in productsToPreload) {
+      final url = InternetHandler.getImageUrl(product.productId);
+      _triggerLoadIfNeeded(url);
+    }
+  }
+
+  // Clear old cache entries when it gets too large
+  void _manageCacheSize() {
+    if (_imageWidgetCache.length > _maxImageWidgetCache) {
+      // Remove oldest entries (simple FIFO approach)
+      final keysToRemove = _imageWidgetCache.keys.take(_imageWidgetCache.length - _maxImageWidgetCache);
+      for (final key in keysToRemove) {
+        _imageWidgetCache.remove(key);
+      }
+    }
+  }
+
   // Returnerar bilden som hör till produkten p.
   // Om bilden inte finns cachad returneras en tillfällig bild.
   // När bilden har hämtats meddelas gränssnittet och bilden visas
   // automatiskt om getImage använts i ett sammanhang som använder watch.
   // getImage använder getImageData med Boxfit.cover.
   Widget getImage(Product p) {
+    // Check if we have a cached widget for this product
+    if (_imageWidgetCache.containsKey(p.productId)) {
+      return _imageWidgetCache[p.productId]!;
+    }
+
     String url = InternetHandler.getImageUrl(p.productId);
     
-    return Image.network(
-      url,
-      fit: BoxFit.cover,
-      headers: InternetHandler.apiKeyHeader,
-      frameBuilder: (context, child, frame, wasSynchronouslyLoaded) {
-        if (wasSynchronouslyLoaded) return child;
-        return AnimatedSwitcher(
-          duration: Duration(milliseconds: 200),
-          child: frame != null ? child : Container(
+    // Check if we have cached image data
+    Uint8List? imageData = _imageData[url];
+    
+    Widget imageWidget;
+    if (imageData != null) {
+      // Use cached image data
+      imageWidget = Image.memory(
+        imageData,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return Container(
             color: Colors.grey[200],
-            child: Center(
-              child: CircularProgressIndicator(),
-            ),
+            child: Icon(Icons.image, size: 48, color: Colors.grey[400]),
+          );
+        },
+      );
+    } else {
+      // Trigger loading if not already in progress
+      _triggerLoadIfNeeded(url);
+      
+      // Return loading placeholder
+      imageWidget = Container(
+        color: Colors.grey[200],
+        child: Center(
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: Colors.grey[400],
           ),
-        );
-      },
-      errorBuilder: (context, error, stackTrace) {
-        return Icon(Icons.image);
-      },
-    );
+        ),
+      );
+    }
+    
+    // Manage cache size before adding new entry
+    _manageCacheSize();
+    
+    // Cache the widget
+    _imageWidgetCache[p.productId] = imageWidget;
+    return imageWidget;
   }
 
   // Can be used to create desired images using
@@ -520,6 +569,13 @@ import 'package:http/http.dart' as http;
       );
       if (response.statusCode == 200) {
         _imageData[url] = response.bodyBytes;
+        
+        // Clear cached widgets for this URL so they get recreated with new data
+        final productId = _extractProductIdFromUrl(url);
+        if (productId != null) {
+          _imageWidgetCache.remove(productId);
+        }
+        
         notifyListeners(); // So UI rebuilds if needed
       } else {
         debugPrint('Failed to load image $url: ${response.statusCode}');
@@ -527,6 +583,20 @@ import 'package:http/http.dart' as http;
     } catch (e) {
       debugPrint('Error fetching $url: $e');
     }
+  }
+
+  // Helper method to extract product ID from image URL
+  int? _extractProductIdFromUrl(String url) {
+    try {
+      final uri = Uri.parse(url);
+      final segments = uri.pathSegments;
+      if (segments.isNotEmpty) {
+        return int.tryParse(segments.last);
+      }
+    } catch (e) {
+      debugPrint('Error extracting product ID from URL: $e');
+    }
+    return null;
   }
 
   /*
@@ -568,6 +638,9 @@ import 'package:http/http.dart' as http;
     }
 
     notifyListeners();
+
+    // Preload images for the first few products to improve initial loading experience
+    preloadInitialImages();
 
     // Fetching CreditCard, Customer & User
     response = await InternetHandler.getCreditCard();

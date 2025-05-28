@@ -52,30 +52,40 @@ class MainContent extends StatelessWidget {
         children: [
           CategoryFilter(),
           Expanded(
-            child: SingleChildScrollView(
-              padding: EdgeInsets.all(AppTheme.paddingMedium),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Text(
-                  //   'Erbjudanden',
-                  //   style: Theme.of(context).textTheme.headlineMedium,
-                  // ),
-                  // SizedBox(height: AppTheme.paddingMedium),
-                  // ProductGrid(
-                  //   products: products.take(8).toList(),
-                  // ),
-                  // SizedBox(height: AppTheme.paddingLarge),
-                  Text(
-                    'Produkter',
-                    style: Theme.of(context).textTheme.headlineMedium,
+            child: CustomScrollView(
+              slivers: [
+                SliverPadding(
+                  padding: EdgeInsets.all(AppTheme.paddingMedium),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Produkter',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        SizedBox(height: AppTheme.paddingMedium),
+                      ],
+                    ),
                   ),
-                  SizedBox(height: AppTheme.paddingMedium),
-                  ProductGrid(
-                    products: products.toList(),
+                ),
+                SliverPadding(
+                  padding: EdgeInsets.symmetric(horizontal: AppTheme.paddingMedium),
+                  sliver: SliverGrid.builder(
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 300,
+                      mainAxisExtent: 328,
+                      crossAxisSpacing: AppTheme.paddingMedium,
+                      mainAxisSpacing: AppTheme.paddingMedium,
+                    ),
+                    itemCount: products.length,
+                    itemBuilder: (context, index) {
+                      final product = products[index];
+                      return ProductCard(product: product);
+                    },
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
