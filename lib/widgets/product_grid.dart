@@ -86,6 +86,7 @@ class ProductText extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Spacer(),
           Row(
             spacing: 8,
             children: [

@@ -71,7 +71,7 @@ class _LoginViewState extends State<LoginView> {
                         _buildTextField(
                           controller: _emailController,
                           label: 'Email',
-                          hint: 'john.doe@example.com',
+                          hint: 'din.email@exempel.se',
                           keyboardType: TextInputType.emailAddress,
                           onClear: () => _emailController.clear(),
                         ),
@@ -79,7 +79,7 @@ class _LoginViewState extends State<LoginView> {
                         _buildTextField(
                           controller: _passwordController,
                           label: 'Lösenord',
-                          hint: '********',
+                          hint: 'Skriv ditt lösenord här...',
                           obscureText: true,
                           onClear: () => _passwordController.clear(),
                         ),
@@ -150,10 +150,14 @@ class _LoginViewState extends State<LoginView> {
           controller: controller,
           obscureText: obscureText,
           keyboardType: keyboardType,
+          cursorColor: Colors.brown[600],
           decoration: InputDecoration(
             filled: true,
             fillColor: Colors.brown[50],
             hintText: hint,
+            hintStyle: TextStyle(
+              color: Colors.grey[400],
+            ),
             suffixIcon: controller.text.isNotEmpty
                 ? IconButton(
                     icon: Icon(Icons.clear, size: 20),
