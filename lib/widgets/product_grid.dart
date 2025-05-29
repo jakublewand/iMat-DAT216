@@ -90,7 +90,7 @@ class ProductText extends StatelessWidget {
                 product.name,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              if (product.isEcological) EcoIcon(),
+              ProductBadges(product: product),
             ],
           ),
           SizedBox(height: AppTheme.paddingTiny),
@@ -234,8 +234,28 @@ class ProductImage extends StatelessWidget {
   }
 }
 
+class ProductBadges extends StatelessWidget {
+  const ProductBadges({super.key, required this.product, this.size = 14});
+
+  final Product product;
+  final double size;
+  @override
+  Widget build(BuildContext context) {
+    var iMat = Provider.of<ImatDataHandler>(context, listen: true);
+    return Row(
+      spacing: size / 2,
+      children: [
+        if (product.isEcological) EcoIcon(size: size),
+        if (iMat.isFavorite(product)) FavoriteIcon(size: size),
+      ],
+    );
+  }
+}
+
 class EcoIcon extends StatelessWidget {
-  const EcoIcon({super.key});
+  const EcoIcon({super.key, this.size = 14});
+
+  final double size;
 
   @override
   Widget build(BuildContext context) {
@@ -247,7 +267,28 @@ class EcoIcon extends StatelessWidget {
           color: Colors.green,
           borderRadius: BorderRadius.circular(9999),
         ),
-        child: Icon(Icons.eco, color: Colors.white, size: 14),
+        child: Icon(Icons.eco, color: Colors.white, size: size),
+      ),
+    );
+  }
+}
+
+class FavoriteIcon extends StatelessWidget {
+  const FavoriteIcon({super.key, this.size = 14});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      message: 'Favorit',
+      child: Container(
+        padding: EdgeInsets.all(3),
+        decoration: BoxDecoration(
+          color: Colors.deepOrangeAccent,
+          borderRadius: BorderRadius.circular(9999),
+        ),
+        child: Icon(Icons.star, color: Colors.white, size: size),
       ),
     );
   }

@@ -73,7 +73,7 @@ class _AppNavbarState extends State<AppNavbar> {
             child: Container(
               decoration: BoxDecoration(
                 color: AppTheme.primaryShadowColor,
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(999),
               ),
               child: TextField(
                 controller: _searchController,
@@ -82,7 +82,6 @@ class _AppNavbarState extends State<AppNavbar> {
                   hintText: 'Sök',
                   prefixIcon: Icon(Icons.search),
                   // Workaround to make it vertically centered
-                  contentPadding: EdgeInsets.only(bottom: 8),
                   border: InputBorder.none,
                 ),
                 onChanged: (value) {
