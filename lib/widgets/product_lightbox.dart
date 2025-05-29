@@ -62,7 +62,7 @@ class ProductLightbox extends StatelessWidget {
   }
 
   Widget _productInfoSection(BuildContext context, ProductDetail? detail) {
-    var iMat = Provider.of<ImatDataHandler>(context, listen: false);
+    var iMat = Provider.of<ImatDataHandler>(context, listen: true);
 
     return IntrinsicHeight(
       child: Row(
@@ -85,7 +85,13 @@ class ProductLightbox extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Product price and unit
-                Text(product.name, style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold)),
+                Row(
+                  children: [
+                    Text(product.name, style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold)),
+                    SizedBox(width: AppTheme.paddingSmall),
+                    ProductBadges(product: product),
+                  ],
+                ),
                 SizedBox(height: AppTheme.paddingSmall),
                 Text(
                   '${product.price.toStringAsFixed(2)} ${product.unit}',
@@ -128,7 +134,26 @@ class ProductLightbox extends StatelessWidget {
                   ),
                   Spacer(),
                   SizedBox(height: AppTheme.paddingSmall),
-                  AddToCartButton(product: product),
+                  Row(
+                    children: [
+                      AddToCartButton(product: product),
+                      SizedBox(width: AppTheme.paddingMedium),
+                      OutlinedButton.icon(
+                        onPressed: () {
+                          iMat.toggleFavorite(product);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.black,
+                        ),
+                        icon: iMat.isFavorite(product)
+                            ? Icon(Icons.star, color: Colors.amber[800])
+                            : Icon(Icons.star_border, color: Colors.grey[600]),
+                        label: iMat.isFavorite(product)
+                            ? Text('Ta bort favorit')
+                            : Text('Lägg till favorit'),
+                      ),
+                    ],
+                  ),
                 ],
               ],
             ),

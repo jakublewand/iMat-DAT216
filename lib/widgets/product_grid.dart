@@ -235,27 +235,27 @@ class ProductImage extends StatelessWidget {
 }
 
 class ProductBadges extends StatelessWidget {
-  const ProductBadges({super.key, required this.product, this.size = 14});
+  const ProductBadges({super.key, required this.product});
 
   final Product product;
-  final double size;
   @override
   Widget build(BuildContext context) {
     var iMat = Provider.of<ImatDataHandler>(context, listen: true);
-    return Row(
-      spacing: size / 2,
-      children: [
-        if (product.isEcological) EcoIcon(size: size),
-        if (iMat.isFavorite(product)) FavoriteIcon(size: size),
-      ],
+    return SizedBox(
+      width: 100,
+      child: Row(
+        spacing: 8,
+        children: [
+          if (product.isEcological) EcoIcon(),
+          if (iMat.isFavorite(product)) FavoriteIcon(),
+        ],
+      ),
     );
   }
 }
 
 class EcoIcon extends StatelessWidget {
-  const EcoIcon({super.key, this.size = 14});
-
-  final double size;
+  const EcoIcon({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -267,16 +267,14 @@ class EcoIcon extends StatelessWidget {
           color: Colors.green,
           borderRadius: BorderRadius.circular(9999),
         ),
-        child: Icon(Icons.eco, color: Colors.white, size: size),
+        child: Icon(Icons.eco, color: Colors.white, size: 14),
       ),
     );
   }
 }
 
 class FavoriteIcon extends StatelessWidget {
-  const FavoriteIcon({super.key, this.size = 14});
-
-  final double size;
+  const FavoriteIcon({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -288,7 +286,7 @@ class FavoriteIcon extends StatelessWidget {
           color: Colors.deepOrangeAccent,
           borderRadius: BorderRadius.circular(9999),
         ),
-        child: Icon(Icons.star, color: Colors.white, size: size),
+        child: Icon(Icons.star, color: Colors.white, size: 14),
       ),
     );
   }
