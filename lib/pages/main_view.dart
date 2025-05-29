@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat_data_handler.dart';
+import 'package:imat/model/product_filter.dart';
 import 'package:imat/widgets/category_filter.dart';
 import 'package:imat/widgets/page_scaffold.dart';
 import 'package:imat/widgets/product_grid.dart';
@@ -25,10 +26,7 @@ class MainView extends StatelessWidget {
           Expanded(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                MainContent(products: products),
-                ShoppingCart(),
-              ],
+              children: [MainContent(products: products), ShoppingCart()],
             ),
           ),
         ],
@@ -38,20 +36,29 @@ class MainView extends StatelessWidget {
 }
 
 class MainContent extends StatelessWidget {
-  const MainContent({
-    super.key,
-    required this.products,
-  });
+  const MainContent({super.key, required this.products});
 
   final List<Product> products;
 
   @override
   Widget build(BuildContext context) {
     var iMat = context.watch<ImatDataHandler>();
+    var selectedCategoryName =
+        categoryBuckets.entries
+            .firstWhere(
+              (bucket) =>
+                  bucket.value.contains(iMat.activeCategories.firstOrNull),
+            )
+            .key;
+
+    if (selectedCategoryName == "Alla kategorier") {
+      selectedCategoryName = "Produkter";
+    }
+
     return Expanded(
       child: Column(
         children: [
-          CategoryFilter(),
+          CategoryFilterBar(),
           Expanded(
             child: CustomScrollView(
               slivers: [
@@ -62,7 +69,13 @@ class MainContent extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          iMat.isSearchActive ? 'Sökresultat' : 'Produkter',
+                          iMat.isSearchActive
+                              ? 'Sökresultat'
+                              : (iMat.activeFilters.any(
+                                    (filter) => filter is FavoritesFilter,
+                                  )
+                                  ? 'Favoriter'
+                                  : selectedCategoryName),
                           style: Theme.of(context).textTheme.headlineMedium,
                         ),
                         SizedBox(height: AppTheme.paddingMedium),
@@ -70,22 +83,7 @@ class MainContent extends StatelessWidget {
                     ),
                   ),
                 ),
-                SliverPadding(
-                  padding: EdgeInsets.symmetric(horizontal: AppTheme.paddingMedium),
-                  sliver: SliverGrid.builder(
-                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                      maxCrossAxisExtent: 300,
-                      mainAxisExtent: 328,
-                      crossAxisSpacing: AppTheme.paddingMedium,
-                      mainAxisSpacing: AppTheme.paddingMedium,
-                    ),
-                    itemCount: products.length,
-                    itemBuilder: (context, index) {
-                      final product = products[index];
-                      return ProductCard(product: product);
-                    },
-                  ),
-                ),
+                ProductGrid(products: products),
               ],
             ),
           ),
