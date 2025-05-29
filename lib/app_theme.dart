@@ -24,5 +24,6 @@ class AppTheme {
     onPrimary: Colors.black87,
     onSecondary: Colors.white,
     onSurface: Colors.black87,
+    outline: Color(0xFF847469),
   );
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat_data_handler.dart';
@@ -110,9 +111,43 @@ class AddToCartButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var iMat = Provider.of<ImatDataHandler>(context, listen: true);
+
+    if (iMat.getShoppingCart().items.any((item) => item.product.productId == product.productId)) {
+      return SegmentedButton(style: ButtonStyle(
+        visualDensity: VisualDensity(horizontal: -4),
+        // Higher than normal height
+        fixedSize: WidgetStateProperty.all(Size(double.infinity, 100)),
+      ), segments: [
+        ButtonSegment(value: "decrease", icon: Icon(Icons.remove)),
+        ButtonSegment(value: "amount", label: Text(iMat.getShoppingCart().items.firstWhere((item) => item.product.productId == product.productId).amount.toString())),
+        ButtonSegment(value: "increase", icon: Icon(Icons.add)),
+      ], selected: {}, emptySelectionAllowed: true, onSelectionChanged: (value) {
+        if (value.first == "decrease") {
+          iMat.shoppingCartUpdate(iMat.getShoppingCart().items.firstWhere((item) => item.product.productId == product.productId), delta: -1);
+        } else if (value.first == "increase") {
+          iMat.shoppingCartUpdate(iMat.getShoppingCart().items.firstWhere((item) => item.product.productId == product.productId), delta: 1);
+        } else if (value.first == "amount") {
+          showDialog(context: context, builder: (context) => AlertDialog( 
+            title: Text('Antal'),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(context), child: Text('Stäng')),
+            ],
+            content: TextField(
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              maxLength: 2,
+              autofocus: true,
+              keyboardType: TextInputType.number,
+              onChanged: (value) => iMat.shoppingCartUpdate(iMat.getShoppingCart().items.firstWhere((item) => item.product.productId == product.productId), delta: double.parse(value), absolute: true),
+            ),
+          ));
+        }
+      },);
+    }
+
     return ElevatedButton.icon(
       onPressed: () {
-        context.read<ImatDataHandler>().shoppingCartAdd(
+        iMat.shoppingCartAdd(
           ShoppingItem(product, amount: 1),
         );
       },

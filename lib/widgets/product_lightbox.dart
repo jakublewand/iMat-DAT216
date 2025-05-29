@@ -1,7 +1,6 @@
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat/product_detail.dart';
-import 'package:imat/model/imat/shopping_item.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:flutter/material.dart';
 import 'package:imat/widgets/product_grid.dart';

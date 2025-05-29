@@ -56,13 +56,18 @@ class ShoppingCart {
     ShoppingItem sci, {
     double delta = 0.0,
     bool removeEmpty = true,
+    bool absolute = false,
   }) {
     bool found = false;
     int pId = sci.product.productId;
 
     for (final item in items) {
       if (pId == item.product.productId) {
-        item.amount = item.amount + delta;
+        if (absolute) {
+          item.amount = delta;
+        } else {
+          item.amount = item.amount + delta;
+        }
         found = true;
         if (removeEmpty && item.amount <= 0.0) {
           items.remove(item);

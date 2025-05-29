@@ -473,9 +473,9 @@ class ImatDataHandler extends ChangeNotifier {
   // Ett positiv värde ökar mängden och ett negativ minskar.
   // Om värdet blir <= 0 så tas item bort ur kundvagnen.
   // Uppdaterar till servern och meddelar GUI:t att kundvagnen ändrats.
-  void shoppingCartUpdate(ShoppingItem item, {double delta = 0.0}) {
+  void shoppingCartUpdate(ShoppingItem item, {double delta = 0.0, absolute = false}) {
     //print('Adding ${item.product.name}');
-    _shoppingCart.updateItem(item, delta: delta);
+    _shoppingCart.updateItem(item, delta: delta, absolute: absolute);
 
     // Update and notify listeners
     setShoppingCart();
