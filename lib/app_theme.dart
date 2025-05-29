@@ -20,11 +20,9 @@ class AppTheme {
     primary: primaryColor,
     primaryContainer: primaryShadowColor,
     secondary: secondaryColor,
-    background: backgroundColor,
     surface: backgroundColor,
     onPrimary: Colors.black87,
     onSecondary: Colors.white,
-    onBackground: Colors.black87,
     onSurface: Colors.black87,
   );
 }

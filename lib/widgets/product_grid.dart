@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat_data_handler.dart';

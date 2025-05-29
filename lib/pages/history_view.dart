@@ -35,7 +35,7 @@ class _HistoryViewState extends State<HistoryView> {
           Expanded(
             child: Row(
               children: [
-                Container(
+                SizedBox(
                   width: 300,
                   //height: 600,
                   // Creates the list to the left.

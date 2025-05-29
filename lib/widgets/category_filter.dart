@@ -86,7 +86,7 @@ class CategoryFilter extends StatelessWidget {
                 }
               },
             );
-          }).toList(),
+          }),
         ],
       ),
     );

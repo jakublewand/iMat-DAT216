@@ -28,7 +28,7 @@ class ExpiryDateFormatter extends TextInputFormatter {
       
       // Add the slash and year part if we have more than 2 digits
       if (limitedDigits.length > 2) {
-        formatted += '/' + limitedDigits.substring(2);
+        formatted += '/${limitedDigits.substring(2)}';
       }
     }
     
