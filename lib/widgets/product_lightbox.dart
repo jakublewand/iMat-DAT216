@@ -4,6 +4,7 @@ import 'package:imat/model/imat/product_detail.dart';
 import 'package:imat/model/imat/shopping_item.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:flutter/material.dart';
+import 'package:imat/widgets/product_grid.dart';
 import 'package:provider/provider.dart';
 
 class ProductLightbox extends StatelessWidget {
@@ -17,66 +18,28 @@ class ProductLightbox extends StatelessWidget {
     ProductDetail? detail = iMat.getDetail(product);
 
     return Container(
-      padding: EdgeInsets.all(AppTheme.paddingMedium),
+      padding: EdgeInsets.all(AppTheme.paddingHuge).copyWith(bottom: 0),
+      width: 1000,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           _header(context),
-          SizedBox(height: AppTheme.paddingMedium),
           Flexible(
             child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: AppTheme.paddingHuge),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Product image
-                  SizedBox(
-                    width: double.infinity,
-                    height: 300,
-                    child: iMat.getImage(product),
-                  ),
-                  SizedBox(height: AppTheme.paddingMedium),
+                  // Product info section
+                  _productInfoSection(context, detail),
+                  SizedBox(height: AppTheme.paddingHuge),
 
-                  // Product name
-                  Text(
-                    product.name,
-                    style: Theme.of(context).textTheme.headlineSmall,
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: AppTheme.paddingSmall),
-
-                  // Product price
-                  Text(
-                    '${product.price} ${product.unit}',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-
-                  // Product category
-                  Text(
-                    product.category.name,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-
-                  // Product brand and description
-                  if (detail != null) ...[
-                    SizedBox(height: AppTheme.paddingSmall),
-                    Text(
-                      detail.brand,
-                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: AppTheme.paddingSmall),
-                    Text(
-                      detail.description,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      textAlign: TextAlign.center,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-
-                  SizedBox(height: AppTheme.paddingLarge),
-                  _flowButtons(context, iMat),
+                  // Similar products section
+                  _similarProductsSection(context, iMat),
+                  SizedBox(height: AppTheme.paddingHuge),
                 ],
               ),
             ),
@@ -90,10 +53,7 @@ class ProductLightbox extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          'Produktdetaljer',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(color: AppTheme.secondaryColor),
-        ),
+        Spacer(),
         IconButton(
           onPressed: () => Navigator.pop(context),
           icon: Icon(Icons.close),
@@ -102,30 +62,108 @@ class ProductLightbox extends StatelessWidget {
     );
   }
 
-  Widget _flowButtons(BuildContext context, ImatDataHandler iMat) {
-    bool isFavorite = iMat.isFavorite(product);
+  Widget _productInfoSection(BuildContext context, ProductDetail? detail) {
+    var iMat = Provider.of<ImatDataHandler>(context, listen: false);
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        ElevatedButton.icon(
-          onPressed: () {
-            iMat.toggleFavorite(product);
-            Navigator.pop(context);
-          },
-          icon: Icon(
-            isFavorite ? Icons.star : Icons.star_border,
-            color: AppTheme.accentColor,
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Product image on the left
+          Container(
+            width: 440,
+            height: 320,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: iMat.getImage(product),
+            ),
           ),
-          label: Text(isFavorite ? 'Ta bort favorit' : 'Lägg till favorit', style: TextStyle(color: AppTheme.secondaryColor)),
+          SizedBox(width: AppTheme.paddingHuge),
+          // Product information on the right
+          Expanded(
+            flex: 1,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Product price and unit
+                Text(product.name, style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold)),
+                SizedBox(height: AppTheme.paddingSmall),
+                Text(
+                  '${product.price.toStringAsFixed(2)} ${product.unit}',
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: AppTheme.paddingSmall),
+      
+                // Product details if available
+                if (detail != null) ...[
+                  if (detail.description.isNotEmpty) ...[
+                    Text(
+                      detail.description,
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                  SizedBox(height: AppTheme.paddingSmall),
+                  Text(
+                    "Märke: ${detail.brand}",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                  ),
+                  SizedBox(height: AppTheme.paddingSmall),
+                  Text(
+                    "Innehåll: ${detail.contents}",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                  ),
+                  SizedBox(height: AppTheme.paddingSmall),
+                  Text(
+                    "Ursprung: ${detail.origin}",
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.grey[600]),
+                  ),
+                  Spacer(),
+                  SizedBox(height: AppTheme.paddingSmall),
+                  AddToCartButton(product: product),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _similarProductsSection(BuildContext context, ImatDataHandler iMat) {
+    // Get 3 random products or first 3 products (excluding current product)
+    final allProducts =
+        iMat.products.where((p) => p.productId != product.productId).toList();
+    final similarProducts = allProducts.take(6).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Liknande produkter',
+          style: Theme.of(context).textTheme.titleLarge,
         ),
-        ElevatedButton.icon(
-          onPressed: () {
-            iMat.shoppingCartAdd(ShoppingItem(product));
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.shopping_cart, color: Colors.black),
-          label: Text('Lägg i kundvagn', style: TextStyle(color: AppTheme.secondaryColor)),
+        SizedBox(height: AppTheme.paddingMedium),
+
+        // Grid of similar products
+        GridView.count(
+          shrinkWrap: true,
+          crossAxisCount: 3,
+          mainAxisSpacing: AppTheme.paddingMedium,
+          crossAxisSpacing: AppTheme.paddingMedium,
+          children:
+              similarProducts
+                  .map((similarProduct) => ProductCard(product: similarProduct))
+                  .toList(),
         ),
       ],
     );
@@ -133,12 +171,13 @@ class ProductLightbox extends StatelessWidget {
 
   // Static method to show the lightbox
   static void show(BuildContext context, Product product) {
+    // Hide any open lightboxes
+    Navigator.popUntil(context, (route) => route.isFirst);
     showModalBottomSheet(
+      anchorPoint: Offset(0, 0),
       context: context,
+      constraints: BoxConstraints(maxWidth: 1000),
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
       builder: (BuildContext context) {
         return ProductLightbox(product: product);
       },

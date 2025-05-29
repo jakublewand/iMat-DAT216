@@ -9,10 +9,7 @@ import 'package:provider/provider.dart';
 class ProductGrid extends StatelessWidget {
   final List<Product> products;
 
-  const ProductGrid({
-    super.key,
-    required this.products,
-  });
+  const ProductGrid({super.key, required this.products});
 
   @override
   Widget build(BuildContext context) {
@@ -33,10 +30,7 @@ class ProductGrid extends StatelessWidget {
 }
 
 class ProductCard extends StatelessWidget {
-  const ProductCard({
-    super.key,
-    required this.product,
-  });
+  const ProductCard({super.key, required this.product});
 
   final Product product;
 
@@ -44,25 +38,16 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.antiAlias,
+      elevation: 3,
       child: InkWell(
         onTap: () {
-          showModalBottomSheet(
-            isScrollControlled: true,
-            context: context,
-            builder: (context) => ProductLightbox(product: product),
-          );
+          ProductLightbox.show(context, product);
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Expanded(
-              flex: 3,
-              child: ProductImage(product: product),
-            ),
-            Expanded(
-              flex: 2,
-              child: ProductText(product: product),
-            ),
+            Expanded(flex: 3, child: ProductImage(product: product)),
+            Expanded(flex: 2, child: ProductText(product: product)),
           ],
         ),
       ),
@@ -71,10 +56,7 @@ class ProductCard extends StatelessWidget {
 }
 
 class ProductText extends StatelessWidget {
-  const ProductText({
-    super.key,
-    required this.product,
-  });
+  const ProductText({super.key, required this.product});
 
   final Product product;
 
@@ -93,8 +75,7 @@ class ProductText extends StatelessWidget {
                 product.name,
                 style: Theme.of(context).textTheme.titleMedium,
               ),
-              if (product.isEcological)
-                EcoIcon(),
+              if (product.isEcological) EcoIcon(),
             ],
           ),
           SizedBox(height: AppTheme.paddingTiny),
@@ -110,19 +91,7 @@ class ProductText extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               Spacer(),
-              ElevatedButton.icon(
-                onPressed: () {
-                  context.read<ImatDataHandler>().shoppingCartAdd(
-                    ShoppingItem(product, amount: 1),
-                  );
-                },
-                icon: Icon(Icons.add),
-                label: Text('Köp'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.secondaryColor,
-                  foregroundColor: Colors.white,
-                ),
-              ),
+              AddToCartButton(product: product),
             ],
           ),
         ],
@@ -131,8 +100,8 @@ class ProductText extends StatelessWidget {
   }
 }
 
-class ProductImage extends StatelessWidget {
-  const ProductImage({
+class AddToCartButton extends StatelessWidget {
+  const AddToCartButton({
     super.key,
     required this.product,
   });
@@ -141,8 +110,32 @@ class ProductImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      onPressed: () {
+        context.read<ImatDataHandler>().shoppingCartAdd(
+          ShoppingItem(product, amount: 1),
+        );
+      },
+      icon: Icon(Icons.add),
+      label: Text('Köp'),
+      style: ElevatedButton.styleFrom(
+        fixedSize: Size(double.infinity, 40),
+        backgroundColor: AppTheme.secondaryColor,
+        foregroundColor: Colors.white,
+      ),
+    );
+  }
+}
+
+class ProductImage extends StatelessWidget {
+  const ProductImage({super.key, required this.product});
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 4/3,
+      aspectRatio: 4 / 3,
       child: Consumer<ImatDataHandler>(
         builder: (context, dataHandler, child) {
           return dataHandler.getImage(product);
@@ -153,9 +146,7 @@ class ProductImage extends StatelessWidget {
 }
 
 class EcoIcon extends StatelessWidget {
-  const EcoIcon({
-    super.key,
-  });
+  const EcoIcon({super.key});
 
   @override
   Widget build(BuildContext context) {
