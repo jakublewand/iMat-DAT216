@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat_data_handler.dart';
+import 'package:imat/model/product_filter.dart';
 import 'package:provider/provider.dart';
 
 class CategoryFilter extends StatelessWidget {
@@ -12,6 +13,7 @@ class CategoryFilter extends StatelessWidget {
     // Mapping from display names to lists of ProductCategory enum values
     final categoryBuckets = {
       'Alla kategorier': <ProductCategory?>[null],
+      'Favoriter': [ProductCategory.FAVORITE],
       'Bär': [ProductCategory.BERRY],
       'Frukter': [
         ProductCategory.FRUIT,
@@ -33,7 +35,7 @@ class CategoryFilter extends StatelessWidget {
         ProductCategory.PASTA,
         ProductCategory.POTATO_RICE,
         ProductCategory.NUTS_AND_SEEDS,
-        ProductCategory.FLOUR_SUGAR_SALT
+        ProductCategory.FLOUR_SUGAR_SALT,
       ],
       'Örter': [ProductCategory.HERB],
       'Sötsaker': [ProductCategory.SWEET],
@@ -54,17 +56,22 @@ class CategoryFilter extends StatelessWidget {
         children: [
           Text('Filtrera på:'),
           ...categoryBuckets.entries.map((bucket) {
-            final isSelected =
-                isSearchActive
-                    ? bucket.key ==
-                        'Alla kategorier' // When search is active, only "Alla kategorier" appears selected
-                    : bucket.value.contains(null)
-                    ? iMatDataHandler
-                        .activeCategories
-                        .isEmpty // "Alla kategorier" is selected when no categories are active
-                    : iMatDataHandler.areCategoriesActive(
-                      bucket.value.whereType<ProductCategory>().toList(),
-                    );
+            var isSelected = iMatDataHandler.areCategoriesActive(
+              bucket.value.whereType<ProductCategory>().toList(),
+            );
+            // Super ugly but works
+            if (bucket.key == 'Favoriter') {
+              isSelected = iMatDataHandler.activeFilters.any(
+                (filter) => filter is FavoritesFilter,
+              );
+            } else if (bucket.key == 'Alla kategorier') {
+              if (!iMatDataHandler.activeFilters.any(
+                    (filter) => filter is FavoritesFilter,
+                  ) &&
+                  !iMatDataHandler.isSearchActive) {
+                isSelected = iMatDataHandler.activeCategories.isEmpty;
+              }
+            }
 
             return FilterChip(
               label: Text(bucket.key),
@@ -73,12 +80,12 @@ class CategoryFilter extends StatelessWidget {
                 if (selected) {
                   if (bucket.value.contains(null)) {
                     context.read<ImatDataHandler>().selectAllProducts();
+                  } else if (bucket.value.contains(ProductCategory.FAVORITE)) {
+                    context.read<ImatDataHandler>().selectFavorites();
                   } else {
                     // Select all categories in the bucket
                     final categories =
-                        bucket.value
-                            .whereType<ProductCategory>()
-                            .toList();
+                        bucket.value.whereType<ProductCategory>().toList();
                     context.read<ImatDataHandler>().selectCategories(
                       categories,
                     );

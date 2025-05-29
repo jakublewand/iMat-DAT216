@@ -136,6 +136,7 @@ class ImatDataHandler extends ChangeNotifier {
   // Show only favorite products
   void selectFavorites() {
     final favoriteIds = _favorites.keys.toSet();
+    clearAllFilters();
     addFilter(FavoritesFilter(favoriteIds));
   }
 
@@ -151,6 +152,7 @@ class ImatDataHandler extends ChangeNotifier {
   void selectCategory(ProductCategory category) {
     // Clear search filters when selecting a category
     removeFiltersOfType<SearchFilter>();
+    removeFiltersOfType<FavoritesFilter>();
     // Clear the search field UI
     _onSearchClear?.call();
     // Clear any existing category filters (both single and multiple)
@@ -162,6 +164,7 @@ class ImatDataHandler extends ChangeNotifier {
   void selectCategories(List<ProductCategory> categories) {
     // Clear search filters when selecting categories
     removeFiltersOfType<SearchFilter>();
+    removeFiltersOfType<FavoritesFilter>();
     // Clear the search field UI
     _onSearchClear?.call();
     
@@ -173,9 +176,11 @@ class ImatDataHandler extends ChangeNotifier {
   void searchProducts(String searchTerm) {
     if (searchTerm.isEmpty) {
       removeFiltersOfType<SearchFilter>();
+      removeFiltersOfType<FavoritesFilter>();
     } else {
       // Clear category filters when searching (both single and multiple)
       _filters.removeWhere((filter) => filter is CategoryFilter || filter is MultipleCategoryFilter);
+      removeFiltersOfType<FavoritesFilter>();
       addFilter(SearchFilter(searchTerm));
     }
   }

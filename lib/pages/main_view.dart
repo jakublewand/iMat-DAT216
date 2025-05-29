@@ -47,6 +47,7 @@ class MainContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var iMat = context.watch<ImatDataHandler>();
     return Expanded(
       child: Column(
         children: [
@@ -61,7 +62,7 @@ class MainContent extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Produkter',
+                          iMat.isSearchActive ? 'Sökresultat' : 'Produkter',
                           style: Theme.of(context).textTheme.headlineMedium,
                         ),
                         SizedBox(height: AppTheme.paddingMedium),

@@ -22,6 +22,7 @@ enum ProductCategory {
   FRUIT,
   SWEET,
   HERB,
+  FAVORITE,
   UNDEFINED,
 }
 

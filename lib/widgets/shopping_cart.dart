@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/pages/checkout_view.dart';
+import 'package:imat/widgets/product_grid.dart';
 import 'package:provider/provider.dart';
 import 'dart:math';
 
@@ -30,37 +31,48 @@ class ShoppingCart extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Text(
-                  'Varukorg',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
+                Text('Varukorg', style: Theme.of(context).textTheme.titleLarge),
                 Spacer(),
                 IconButton(
                   tooltip: 'Töm varukorg',
                   onPressed: () {
-                    showDialog(context: context, builder: (context) => AlertDialog(
-                      title: Text('Töm varukorg'),
-                      content: Text('Är du säker på att du vill tömma varukorgen?'),
-                      actions: [
-                        ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.primaryColor,
-                            foregroundColor: Colors.white,
+                    showDialog(
+                      context: context,
+                      builder:
+                          (context) => AlertDialog(
+                            title: Text('Töm varukorg'),
+                            content: Text(
+                              'Är du säker på att du vill tömma varukorgen?',
+                            ),
+                            actions: [
+                              ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppTheme.primaryColor,
+                                  foregroundColor: Colors.white,
+                                ),
+                                onPressed: () {
+                                  context
+                                      .read<ImatDataHandler>()
+                                      .shoppingCartClear();
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  'Ja',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  'Avbryt',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                            ],
                           ),
-                          onPressed: () {
-                            context.read<ImatDataHandler>().shoppingCartClear();
-                            Navigator.pop(context);
-                          },
-                          child: Text('Ja', style: TextStyle(color: Colors.black)),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: Text('Avbryt', style: TextStyle(color: Colors.black)),
-                        ),
-                      ],
-                    ));
+                    );
                   },
                   icon: Icon(Icons.delete),
                 ),
@@ -120,7 +132,8 @@ class ShoppingCart extends StatelessWidget {
                                 children: [
                                   Text(
                                     item.product.name,
-                                    style: Theme.of(context).textTheme.titleMedium,
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
                                   ),
                                   Text(
                                     '${item.total.toStringAsFixed(2)} kr',
@@ -139,41 +152,10 @@ class ShoppingCart extends StatelessWidget {
                                     Icons.delete,
                                     color: Colors.red[300],
                                   ),
-                                  onPressed: () => iMat.shoppingCartRemove(item),
+                                  onPressed:
+                                      () => iMat.shoppingCartRemove(item),
                                 ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[100],
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(Icons.remove),
-                                        onPressed: () => iMat.shoppingCartUpdate(
-                                          item,
-                                          delta: -1,
-                                        ),
-                                      ),
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          item.amount.toString(),
-                                          style: Theme.of(context).textTheme.titleMedium,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(Icons.add),
-                                        onPressed: () => iMat.shoppingCartUpdate(
-                                          item,
-                                          delta: 1,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                AddToCartButton(product: item.product),
                               ],
                             ),
                           ],
@@ -229,4 +211,4 @@ class ShoppingCart extends StatelessWidget {
       ),
     );
   }
-} 
+}
