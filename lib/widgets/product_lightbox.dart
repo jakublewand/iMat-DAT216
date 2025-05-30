@@ -69,7 +69,7 @@ class ProductLightbox extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Product image on the left
-          Container(
+          SizedBox(
             width: 440,
             height: 320,
             child: ClipRRect(

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 import 'package:provider/provider.dart';
+import 'package:flutter/semantics.dart';
 
 void main() {
   runApp(
@@ -17,6 +18,7 @@ void main() {
       child: const MyApp(),
     ),
   );
+  SemanticsBinding.instance.ensureSemantics();
 }
 
 class MyApp extends StatelessWidget {
