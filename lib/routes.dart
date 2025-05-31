@@ -6,7 +6,6 @@ import 'package:imat/pages/checkout_view.dart';
 import 'package:imat/pages/checkout_success_view.dart';
 import 'package:imat/pages/account_view.dart';
 import 'package:imat/pages/history_view.dart';
-import 'package:imat/pages/product_detail_view.dart';
 
 class AppRoutes {
   // Route names as constants
@@ -20,16 +19,35 @@ class AppRoutes {
   static const String product = '/product';
   
   // Helper method för produktroute med id
-  static String productWithId(int productId) => '$product/$productId';
+  static String productWithId(int productId) => '/product/$productId';
 
   // GoRouter configuration
   static final GoRouter router = GoRouter(
     initialLocation: home,
     routes: [
-      GoRoute(
-        path: home,
-        name: 'home',
-        builder: (context, state) => const MainView(),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) => navigationShell,
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: home,
+                name: 'home',
+                builder: (context, state) => const MainView(),
+                routes: [
+                  GoRoute(
+                    path: 'product/:id',
+                    name: 'product',
+                    builder: (context, state) {
+                      final id = int.parse(state.pathParameters['id']!);
+                      return MainView(selectedProductId: id);
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
       GoRoute(
         path: login,
@@ -60,14 +78,6 @@ class AppRoutes {
         path: history,
         name: 'history',
         builder: (context, state) => const HistoryView(),
-      ),
-      GoRoute(
-        path: '/product/:id',
-        name: 'product',
-        builder: (context, state) {
-          final id = int.parse(state.pathParameters['id']!);
-          return ProductDetailView(productId: id);
-        },
       ),
     ],
   );
