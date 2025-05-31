@@ -245,10 +245,11 @@ class ProductBadges extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var iMat = Provider.of<ImatDataHandler>(context, listen: true);
-    return SizedBox(
-      width: 100,
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: 100),
       child: Row(
         spacing: 8,
+        mainAxisSize: MainAxisSize.min,
         children: [
           if (product.isEcological) EcoIcon(),
           if (iMat.isFavorite(product)) FavoriteIcon(),
