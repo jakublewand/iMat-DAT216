@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:imat/model/imat/credit_card.dart';
 import 'package:provider/provider.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/customer.dart';
+import 'package:imat/model/imat/user.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/widgets/page_scaffold.dart';
 
@@ -21,8 +23,12 @@ class _SignUpViewState extends State<SignUpView> {
   final _addressController = TextEditingController();
   final _postCodeController = TextEditingController();
   final _postAddressController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
+  bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
@@ -33,6 +39,8 @@ class _SignUpViewState extends State<SignUpView> {
     _addressController.dispose();
     _postCodeController.dispose();
     _postAddressController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -137,6 +145,48 @@ class _SignUpViewState extends State<SignUpView> {
                               if (!value.contains('@') ||
                                   !value.contains('.')) {
                                 return 'Vänligen ange en giltig e-postadress';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: AppTheme.paddingMedium),
+
+                          _buildPasswordField(
+                            controller: _passwordController,
+                            label: 'Lösenord',
+                            isVisible: _isPasswordVisible,
+                            onVisibilityToggle: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Vänligen ange ett lösenord';
+                              }
+                              if (value.length < 6) {
+                                return 'Lösenordet måste vara minst 6 tecken';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: AppTheme.paddingMedium),
+
+                          _buildPasswordField(
+                            controller: _confirmPasswordController,
+                            label: 'Bekräfta lösenord',
+                            isVisible: _isConfirmPasswordVisible,
+                            onVisibilityToggle: () {
+                              setState(() {
+                                _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Vänligen bekräfta ditt lösenord';
+                              }
+                              if (value != _passwordController.text) {
+                                return 'Lösenorden matchar inte';
                               }
                               return null;
                             },
@@ -324,6 +374,62 @@ class _SignUpViewState extends State<SignUpView> {
     );
   }
 
+  Widget _buildPasswordField({
+    required TextEditingController controller,
+    required String label,
+    required bool isVisible,
+    required VoidCallback onVisibilityToggle,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: TextInputType.visiblePassword,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(color: AppTheme.secondaryColor),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey[300]!),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppTheme.accentColor, width: 2),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Colors.red, width: 2),
+        ),
+        prefixIcon: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(Icons.lock, color: AppTheme.secondaryColor),
+        ),
+        suffixIcon: IconButton(
+          icon: Icon(
+            isVisible ? Icons.visibility : Icons.visibility_off,
+            color: AppTheme.secondaryColor,
+          ),
+          onPressed: onVisibilityToggle,
+        ),
+        filled: true,
+        fillColor: Colors.grey[50],
+      ),
+      validator: validator,
+      cursorColor: AppTheme.secondaryColor,
+      obscureText: !isVisible,
+    );
+  }
+
   void _registerCustomer() async {
     if (_formKey.currentState!.validate()) {
       setState(() {
@@ -348,8 +454,18 @@ class _SignUpViewState extends State<SignUpView> {
           _postAddressController.text.trim(),
         );
 
+        // Create new user with email as username and provided password
+        final user = User(
+          _emailController.text.trim(), // email as username
+          _passwordController.text,
+        );
+
         // Set customer data (always group 22)
         imatDataHandler.setCustomer(customer);
+        imatDataHandler.setCreditCard(CreditCard.empty);
+        imatDataHandler.clearAllFilters();
+        imatDataHandler.shoppingCartClear();
+        imatDataHandler.setUser(user);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(

@@ -6,6 +6,15 @@ class CreditCard {
   String cardNumber;
   int verificationCode;
 
+  static CreditCard empty = CreditCard(
+    '',
+    '',
+    0,
+    0,
+    '',
+    0,
+  );
+
   CreditCard(
     this.cardType,
     this.holdersName,
