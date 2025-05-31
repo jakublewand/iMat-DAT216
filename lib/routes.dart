@@ -97,16 +97,33 @@ class ProductModalPage extends Page {
     return ModalBottomSheetRoute(
       settings: this,
       builder: (context) {
-        // Fix from GitHub issue: get the current page to access fresh productId
+        // Fix from GitHub issue #150291 by chunhtai - get fresh settings reference
         final currentPage = ModalRoute.of(context)?.settings as ProductModalPage?;
-        final id = currentPage?.productId ?? productId;
         
         return Consumer<ImatDataHandler>(
           builder: (context, iMat, child) {
+            // Use the current page's productId to ensure fresh data
+            final id = currentPage?.productId ?? productId;
+            
+            // Check if products are still loading
+            if (iMat.products.isEmpty) {
+              // Products are still loading, show loading indicator
+              return Container(
+                padding: const EdgeInsets.all(32),
+                decoration: const BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+                ),
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+            
             final product = iMat.getProduct(id);
             
             if (product == null) {
-              // Product not found, redirect to home
+              // Product not found after products loaded, redirect to home
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (context.mounted) {
                   context.go(AppRoutes.home);
