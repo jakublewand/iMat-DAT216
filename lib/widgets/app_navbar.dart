@@ -5,6 +5,7 @@ import 'package:imat/pages/account_view.dart';
 import 'package:imat/pages/history_view.dart';
 import 'package:imat/pages/login_view.dart';
 import 'package:imat/pages/main_view.dart';
+import 'package:imat/pages/signup_view.dart';
 import 'package:provider/provider.dart';
 
 class AppNavbar extends StatefulWidget {
@@ -162,7 +163,7 @@ class _AppNavbarState extends State<AppNavbar> {
       ),
       SizedBox(width: 8),
       ElevatedButton(
-        onPressed: () => _showLogin(context),
+        onPressed: () => _showSignup(context),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,
@@ -181,6 +182,13 @@ class _AppNavbarState extends State<AppNavbar> {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => LoginView()),
+    );
+  }
+
+  void _showSignup(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => SignUpView()),
     );
   }
 

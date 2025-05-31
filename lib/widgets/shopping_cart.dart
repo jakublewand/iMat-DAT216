@@ -14,7 +14,7 @@ class ShoppingCart extends StatelessWidget {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final minWidth = max(350.0, screenWidth * 0.25);
-
+    var iMat = Provider.of<ImatDataHandler>(context, listen: true);
     return Container(
       width: minWidth,
       decoration: BoxDecoration(
@@ -126,13 +126,9 @@ class ShoppingCart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text('Totalt:', style: Theme.of(context).textTheme.titleMedium),
-                Consumer<ImatDataHandler>(
-                  builder: (context, iMat, child) {
-                    return Text(
-                      '${iMat.shoppingCartTotal().toStringAsFixed(2).replaceAll('.', ',')} kr',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    );
-                  },
+                Text(
+                  '${iMat.shoppingCartTotal().toStringAsFixed(2).replaceAll('.', ',')} kr',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               ],
             ),
@@ -140,12 +136,12 @@ class ShoppingCart extends StatelessWidget {
           Padding(
             padding: EdgeInsets.all(AppTheme.paddingMedium),
             child: ElevatedButton(
-              onPressed: () {
+              onPressed: iMat.shoppingCartTotal() > 0 ? () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => CheckoutView()),
                 );
-              },
+              } : null,
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.accentColor,
                 foregroundColor: Colors.white,
