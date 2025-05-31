@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
+import 'package:imat/model/imat/shopping_item.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/pages/checkout_view.dart';
 import 'package:imat/widgets/product_grid.dart';
@@ -108,60 +109,7 @@ class ShoppingCart extends StatelessWidget {
                   itemCount: cart.items.length,
                   itemBuilder: (context, index) {
                     final item = cart.items[index];
-                    return Card(
-                      child: Padding(
-                        padding: EdgeInsets.all(AppTheme.paddingMedium),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: iMat.getImage(item.product),
-                              ),
-                            ),
-                            SizedBox(width: AppTheme.paddingMedium),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    item.product.name,
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                  Text(
-                                    item.totalString,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleSmall
-                                        ?.copyWith(color: Colors.grey[600]),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.delete,
-                                    color: Colors.red[300],
-                                  ),
-                                  onPressed:
-                                      () => iMat.shoppingCartRemove(item),
-                                ),
-                                AddToCartButton(product: item.product),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
+                    return ShoppingCartItemCard(item: item);
                   },
                 ),
               );
@@ -177,7 +125,7 @@ class ShoppingCart extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('Total:', style: Theme.of(context).textTheme.titleMedium),
+                Text('Totalt:', style: Theme.of(context).textTheme.titleMedium),
                 Consumer<ImatDataHandler>(
                   builder: (context, iMat, child) {
                     return Text(
@@ -208,6 +156,70 @@ class ShoppingCart extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ShoppingCartItemCard extends StatelessWidget {
+  const ShoppingCartItemCard({super.key, required this.item});
+
+  final ShoppingItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    var iMat = Provider.of<ImatDataHandler>(context, listen: true);
+
+    return Card(
+      child: Padding(
+        padding: EdgeInsets.all(AppTheme.paddingMedium),
+        child: Row(
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: iMat.getImage(item.product),
+              ),
+            ),
+            SizedBox(width: AppTheme.paddingMedium),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.product.name,
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(
+                    item.totalString,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.titleSmall?.copyWith(color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            ),
+            Row(
+              children: [
+                Tooltip(
+                  message: 'Ta bort',
+                  child: IconButton(
+                    icon: Icon(Icons.delete, color: Colors.grey[600]),
+                    onPressed: () => iMat.shoppingCartRemove(item),
+                  ),
+                ),
+                SizedBox(width: AppTheme.paddingTiny),
+                AddToCartButton(product: item.product),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

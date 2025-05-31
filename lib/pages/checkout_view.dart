@@ -3,6 +3,7 @@ import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/pages/checkout_success_view.dart';
 import 'package:imat/widgets/customer_details.dart';
+import 'package:imat/widgets/shopping_cart.dart';
 import 'package:provider/provider.dart';
 import 'package:imat/widgets/page_scaffold.dart';
 
@@ -34,7 +35,7 @@ class CheckoutView extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
-                  flex: 2,
+                  flex: 1,
                   child: Consumer<ImatDataHandler>(
                     builder: (context, iMat, child) {
                       final cart = iMat.getShoppingCart();
@@ -42,67 +43,7 @@ class CheckoutView extends StatelessWidget {
                         itemCount: cart.items.length,
                         itemBuilder: (context, index) {
                           final item = cart.items[index];
-                          return Card(
-                            child: Padding(
-                              padding: EdgeInsets.all(AppTheme.paddingMedium),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    width: 80,
-                                    height: 80,
-                                    color: Colors.grey[200],
-                                    child: iMat.getImage(item.product),
-                                  ),
-                                  SizedBox(width: AppTheme.paddingMedium),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          item.product.name,
-                                          style:
-                                              Theme.of(
-                                                context,
-                                              ).textTheme.titleMedium,
-                                        ),
-                                        Text(
-                                          item.product.priceString,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      IconButton(
-                                        icon: Icon(Icons.remove),
-                                        onPressed:
-                                            () => iMat.shoppingCartUpdate(
-                                              item,
-                                              delta: -1,
-                                            ),
-                                      ),
-                                      SizedBox(
-                                        width: 40,
-                                        child: Text(
-                                          '${item.amount}',
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                      IconButton(
-                                        icon: Icon(Icons.add),
-                                        onPressed:
-                                            () => iMat.shoppingCartUpdate(
-                                              item,
-                                              delta: 1,
-                                            ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
+                          return ShoppingCartItemCard(item: item);
                         },
                       );
                     },
