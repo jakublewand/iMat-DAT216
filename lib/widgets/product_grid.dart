@@ -30,7 +30,7 @@ class ProductGrid extends StatelessWidget {
       sliver: SliverGrid.builder(
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 300,
-          mainAxisExtent: 328,
+          mainAxisExtent: 280,
           crossAxisSpacing: AppTheme.paddingMedium,
           mainAxisSpacing: AppTheme.paddingMedium,
         ),
@@ -62,7 +62,13 @@ class ProductCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(flex: 3, child: ProductImage(product: product)),
-            Expanded(flex: 2, child: ProductText(product: product)),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: EdgeInsets.all(AppTheme.paddingSmall),
+                child: ProductText(product: product),
+              ),
+            ),
           ],
         ),
       ),
@@ -88,22 +94,20 @@ class ProductText extends StatelessWidget {
             children: [
               Text(
                 product.name,
-                style: Theme.of(context).textTheme.titleMedium,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
               ),
               ProductBadges(product: product),
             ],
-          ),
-          SizedBox(height: AppTheme.paddingTiny),
-          Text(
-            '${product.price} kr per ${product.unit}',
-            style: Theme.of(context).textTheme.bodySmall,
           ),
           SizedBox(height: AppTheme.paddingSmall),
           Row(
             children: [
               Text(
-                '${product.price} kr',
-                style: Theme.of(context).textTheme.titleMedium,
+                product.priceString,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
               Spacer(),
               AddToCartButton(product: product),

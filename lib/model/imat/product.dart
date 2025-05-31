@@ -80,6 +80,8 @@ class Product {
     final Product otherProduct = other as Product;
     return productId == otherProduct.productId;
   }
+
+  String get priceString => '${price.toStringAsFixed(2).replaceAll('.', ',')} $unit';
 }
 
 ProductCategory _category(String cat) {

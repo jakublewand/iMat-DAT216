@@ -136,7 +136,7 @@ class ShoppingCart extends StatelessWidget {
                                         Theme.of(context).textTheme.titleMedium,
                                   ),
                                   Text(
-                                    '${item.total.toStringAsFixed(2)} kr',
+                                    item.totalString,
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleSmall
@@ -181,7 +181,7 @@ class ShoppingCart extends StatelessWidget {
                 Consumer<ImatDataHandler>(
                   builder: (context, iMat, child) {
                     return Text(
-                      '${iMat.shoppingCartTotal().toStringAsFixed(2)} kr',
+                      '${iMat.shoppingCartTotal().toStringAsFixed(2).replaceAll('.', ',')} kr',
                       style: Theme.of(context).textTheme.titleMedium,
                     );
                   },

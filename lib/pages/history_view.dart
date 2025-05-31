@@ -169,7 +169,7 @@ class _HistoryViewState extends State<HistoryView> {
                                 ),
                                 SizedBox(height: 4),
                                 Text(
-                                  '${item.product.price} kr per ${item.product.unit}',
+                                  item.product.priceString,
                                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: Colors.grey[600],
                                   ),
@@ -185,7 +185,7 @@ class _HistoryViewState extends State<HistoryView> {
                           
                           // Item total
                           Text(
-                            '${item.total.toStringAsFixed(2)} kr',
+                            item.totalString,
                             style: Theme.of(context).textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -216,7 +216,7 @@ class _HistoryViewState extends State<HistoryView> {
                     ),
                   ),
                   Text(
-                    '${order.getTotal().toStringAsFixed(2)} kr',
+                    order.getTotal().toStringAsFixed(2).replaceAll('.', ','),
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppTheme.secondaryColor,

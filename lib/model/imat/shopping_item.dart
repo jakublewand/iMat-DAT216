@@ -17,6 +17,8 @@ class ShoppingItem {
     _amount: amount,
   };
 
+  String get totalString => '${total.toStringAsFixed(2).replaceAll('.', ',')} kr';
+
   static const _product = 'product';
   static const _amount = 'amount';
 }

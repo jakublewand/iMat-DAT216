@@ -67,7 +67,7 @@ class CheckoutView extends StatelessWidget {
                                               ).textTheme.titleMedium,
                                         ),
                                         Text(
-                                          '${item.product.price} kr/${item.product.unit}',
+                                          item.product.priceString,
                                         ),
                                       ],
                                     ),
@@ -143,7 +143,7 @@ class CheckoutView extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              'Lägg beställning på (${iMat.shoppingCartTotal()} kr)',
+                              'Lägg beställning på (${iMat.shoppingCartTotal().toStringAsFixed(2).replaceAll('.', ',')} kr)',
                               style: TextStyle(fontSize: 16),
                             ),
                           );
