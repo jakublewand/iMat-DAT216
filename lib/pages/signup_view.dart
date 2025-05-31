@@ -7,6 +7,7 @@ import 'package:imat/model/imat/user.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/widgets/custom_text_field.dart';
 import 'package:imat/widgets/page_scaffold.dart';
+import 'package:go_router/go_router.dart';
 
 class SignUpView extends StatefulWidget {
   const SignUpView({super.key});
@@ -51,7 +52,7 @@ class _SignUpViewState extends State<SignUpView> {
         padding: const EdgeInsets.all(AppTheme.paddingLarge),
         child: Center(
           child: Container(
-            constraints: const BoxConstraints(maxWidth: 500),
+            constraints: const BoxConstraints(maxWidth: 600),
             child: Card(
               elevation: 8,
               shadowColor: AppTheme.secondaryColor.withOpacity(0.2),
@@ -68,7 +69,7 @@ class _SignUpViewState extends State<SignUpView> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.arrow_back),
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => context.pop(),
                         ),
                         Expanded(
                           child: Text(
@@ -291,7 +292,7 @@ class _SignUpViewState extends State<SignUpView> {
 
                           // Login link
                           TextButton(
-                            onPressed: () => Navigator.pop(context),
+                            onPressed: () => context.pop(),
                             child: Text(
                               'Har du redan ett konto? Logga in här',
                               style: TextStyle(
@@ -369,7 +370,7 @@ class _SignUpViewState extends State<SignUpView> {
           );
 
           // Navigate back to login/previous page
-          Navigator.pop(context);
+          context.pop();
         }
       } catch (e) {
         if (mounted) {

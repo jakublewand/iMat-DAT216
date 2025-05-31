@@ -4,8 +4,10 @@ import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/model/imat/shopping_item.dart';
+import 'package:imat/routes.dart';
 import 'package:imat/widgets/product_lightbox.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class ProductGrid extends StatelessWidget {
   final List<Product> products;
@@ -56,7 +58,7 @@ class ProductCard extends StatelessWidget {
       elevation: 3,
       child: InkWell(
         onTap: () {
-          ProductLightbox.show(context, product);
+          context.go(AppRoutes.productWithId(product.productId));
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

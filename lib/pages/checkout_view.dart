@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat_data_handler.dart';
-import 'package:imat/pages/checkout_success_view.dart';
 import 'package:imat/widgets/customer_details.dart';
 import 'package:imat/widgets/shopping_cart.dart';
+import 'package:imat/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:imat/widgets/page_scaffold.dart';
+import 'package:go_router/go_router.dart';
 
 class CheckoutView extends StatelessWidget {
   const CheckoutView({super.key});
@@ -21,7 +22,7 @@ class CheckoutView extends StatelessWidget {
             children: [
               IconButton(
                 icon: Icon(Icons.arrow_back),
-                onPressed: () => Navigator.pop(context),
+                onPressed: () => context.pop(),
               ),
               Text(
                 'Ordersammanfattning',
@@ -65,12 +66,7 @@ class CheckoutView extends StatelessWidget {
                           return ElevatedButton(
                             onPressed: () {
                               iMat.placeOrder();
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => CheckoutSuccessView(),
-                                ),
-                              );
+                              context.go(AppRoutes.checkoutSuccess);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.secondaryColor,

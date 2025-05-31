@@ -6,6 +6,7 @@ import 'package:imat/model/product_filter.dart';
 import 'package:imat/widgets/category_filter.dart';
 import 'package:imat/widgets/page_scaffold.dart';
 import 'package:imat/widgets/product_grid.dart';
+import 'package:imat/widgets/product_lightbox.dart';
 import 'package:imat/widgets/shopping_cart.dart';
 import 'package:imat/widgets/welcome_header.dart';
 import 'package:provider/provider.dart';

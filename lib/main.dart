@@ -4,7 +4,7 @@ import 'package:imat/model/imat/customer.dart';
 import 'package:imat/model/imat/util/functions.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/model/internet_handler.dart';
-import 'package:imat/pages/main_view.dart';
+import 'package:imat/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'dart:convert';
@@ -13,6 +13,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/semantics.dart';
 
 void main() {
+  // Använd path routing för web (bättre SEO)
   usePathUrlStrategy();
   runApp(
     ChangeNotifierProvider(
@@ -26,13 +27,15 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'iMat Demo',
-      theme: ThemeData(colorScheme: AppTheme.colorScheme, visualDensity: VisualDensity(vertical: 0)),
-      home: const MainView(),
+      theme: ThemeData(
+        colorScheme: AppTheme.colorScheme,
+        visualDensity: const VisualDensity(vertical: 0),
+      ),
+      routerConfig: AppRoutes.router,
     );
   }
 }

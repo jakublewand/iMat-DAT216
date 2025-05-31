@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/shopping_item.dart';
 import 'package:imat/model/imat_data_handler.dart';
-import 'package:imat/pages/checkout_view.dart';
 import 'package:imat/widgets/product_grid.dart';
+import 'package:imat/routes.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 import 'dart:math';
 
 class ShoppingCart extends StatelessWidget {
@@ -18,7 +19,10 @@ class ShoppingCart extends StatelessWidget {
     return Container(
       width: minWidth,
       decoration: BoxDecoration(
-        border: Border(left: BorderSide(color: Colors.grey[300]!, width: 1)),
+        color: Colors.white,
+        border: Border(
+          left: BorderSide(color: Colors.grey[300]!, width: 1),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -135,20 +139,22 @@ class ShoppingCart extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.all(AppTheme.paddingMedium),
-            child: ElevatedButton(
-              onPressed: iMat.shoppingCartTotal() > 0 ? () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CheckoutView()),
+            child: Consumer<ImatDataHandler>(
+              builder: (context, iMat, child) {
+                return ElevatedButton(
+                  onPressed: iMat.shoppingCartTotal() > 0 ? () {
+                    context.go(AppRoutes.checkout);
+                  } : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.secondaryColor,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: Text('Till kassan'),
                 );
-              } : null,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.accentColor,
-                foregroundColor: Colors.white,
-                fixedSize: Size(double.infinity, 50),
-                padding: EdgeInsets.symmetric(vertical: AppTheme.paddingMedium),
-              ),
-              child: Text('Till kassan'),
+              },
             ),
           ),
         ],

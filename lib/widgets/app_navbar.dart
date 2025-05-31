@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat_data_handler.dart';
-import 'package:imat/pages/account_view.dart';
-import 'package:imat/pages/history_view.dart';
-import 'package:imat/pages/login_view.dart';
-import 'package:imat/pages/main_view.dart';
-import 'package:imat/pages/signup_view.dart';
+import 'package:imat/routes.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class AppNavbar extends StatefulWidget {
   const AppNavbar({super.key});
@@ -57,10 +54,7 @@ class _AppNavbarState extends State<AppNavbar> {
         children: [
           InkWell(
             onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => MainView()),
-              );
+              context.go(AppRoutes.home);
             },
             child: Text(
               'iMat',
@@ -103,7 +97,7 @@ class _AppNavbarState extends State<AppNavbar> {
   List<Widget> _loggedInButtons(BuildContext context, ImatDataHandler iMat) {
     return [
       ElevatedButton(
-        onPressed: () => _showHistory(context),
+        onPressed: () => context.go(AppRoutes.history),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,
@@ -117,7 +111,7 @@ class _AppNavbarState extends State<AppNavbar> {
       ),
       SizedBox(width: 8),
       ElevatedButton(
-        onPressed: () => _showAccount(context),
+        onPressed: () => context.go(AppRoutes.account),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,
@@ -149,7 +143,7 @@ class _AppNavbarState extends State<AppNavbar> {
   List<Widget> _loggedOutButtons(BuildContext context) {
     return [
       ElevatedButton(
-        onPressed: () => _showLogin(context),
+        onPressed: () => context.go(AppRoutes.login),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,
@@ -163,7 +157,7 @@ class _AppNavbarState extends State<AppNavbar> {
       ),
       SizedBox(width: 8),
       ElevatedButton(
-        onPressed: () => _showSignup(context),
+        onPressed: () => context.go(AppRoutes.signup),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,
@@ -176,34 +170,6 @@ class _AppNavbarState extends State<AppNavbar> {
         child: Text('Registrera'),
       ),
     ];
-  }
-
-  void _showLogin(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LoginView()),
-    );
-  }
-
-  void _showSignup(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => SignUpView()),
-    );
-  }
-
-  void _showAccount(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => AccountView()),
-    );
-  }
-
-  void _showHistory(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => HistoryView()),
-    );
   }
 
   void _logout(BuildContext context, ImatDataHandler iMat) {
@@ -229,7 +195,7 @@ class _AppNavbarState extends State<AppNavbar> {
               onPressed: () {
                 iMat.logout();
                 Navigator.pop(context);
-                Navigator.popUntil(context, (route) => route.isFirst);
+                context.go(AppRoutes.home);
               },
               child: Text('Logga ut'),
 

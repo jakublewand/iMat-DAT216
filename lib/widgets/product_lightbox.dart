@@ -2,9 +2,11 @@ import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat/product_detail.dart';
 import 'package:imat/model/imat_data_handler.dart';
+import 'package:imat/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:imat/widgets/product_grid.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class ProductLightbox extends StatelessWidget {
   const ProductLightbox({required this.product, super.key});
@@ -54,7 +56,7 @@ class ProductLightbox extends StatelessWidget {
       children: [
         Spacer(),
         IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => context.go(AppRoutes.home),
           icon: Icon(Icons.close),
         ),
       ],
@@ -184,27 +186,45 @@ class ProductLightbox extends StatelessWidget {
           crossAxisCount: 3,
           mainAxisSpacing: AppTheme.paddingMedium,
           crossAxisSpacing: AppTheme.paddingMedium,
-          children:
-              similarProducts
-                  .map((similarProduct) => ProductCard(product: similarProduct))
-                  .toList(),
+          children: similarProducts
+              .map((similarProduct) => _SimilarProductCard(product: similarProduct))
+              .toList(),
         ),
       ],
     );
   }
+}
 
-  // Static method to show the lightbox
-  static void show(BuildContext context, Product product) {
-    // Hide any open lightboxes
-    Navigator.popUntil(context, (route) => route.isFirst);
-    showModalBottomSheet(
-      anchorPoint: Offset(0, 0),
-      context: context,
-      constraints: BoxConstraints(maxWidth: 1000),
-      isScrollControlled: true,
-      builder: (BuildContext context) {
-        return ProductLightbox(product: product);
-      },
+// Variant av ProductCard som ersätter nuvarande lightbox
+class _SimilarProductCard extends StatelessWidget {
+  const _SimilarProductCard({required this.product});
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      elevation: 3,
+      child: InkWell(
+        onTap: () {
+          // Navigera direkt till ny produkt med go_router
+          context.go(AppRoutes.productWithId(product.productId));
+        },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(flex: 3, child: ProductImage(product: product)),
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: EdgeInsets.all(AppTheme.paddingSmall),
+                child: ProductText(product: product),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

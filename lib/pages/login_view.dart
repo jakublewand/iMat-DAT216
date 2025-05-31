@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
-import 'package:imat/model/imat_data_handler.dart';
-import 'package:imat/pages/signup_view.dart';
 import 'package:imat/widgets/custom_text_field.dart';
-import 'package:imat/widgets/page_scaffold.dart';
+import 'package:imat/model/imat_data_handler.dart';
+import 'package:imat/routes.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -28,47 +28,65 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return PageScaffold(
-      backgroundColor: Colors.brown[50],
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.paddingLarge),
-        child: Center(
+    return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: AppBar(
+        backgroundColor: AppTheme.primaryColor,
+        foregroundColor: Colors.black,
+        elevation: 0,
+        title: const Text(
+          'Logga in',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => context.pop(),
+        ),
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(AppTheme.paddingLarge),
           child: Container(
             constraints: const BoxConstraints(maxWidth: 500),
             child: Card(
               elevation: 8,
-              shadowColor: AppTheme.secondaryColor.withOpacity(0.2),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(16),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(AppTheme.paddingLarge),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Header with back button
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.arrow_back),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        Expanded(
-                          child: Text(
-                            'Välkommen tillbaka!',
-                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                              color: AppTheme.secondaryColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
+                    // Header section
+                    Icon(
+                      Icons.login,
+                      size: 64,
+                      color: AppTheme.accentColor,
+                    ),
+                    const SizedBox(height: AppTheme.paddingMedium),
+                    Text(
+                      'Välkommen tillbaka!',
+                      style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.secondaryColor,
                           ),
-                        ),
-                        const SizedBox(width: 48), // Balance the back button
-                      ],
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: AppTheme.paddingSmall),
+                    Text(
+                      'Logga in för att fortsätta handla',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                      textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: AppTheme.paddingLarge),
                     
-                    // Login form
+                    // Form section
                     Form(
                       key: _formKey,
                       child: Column(
@@ -163,12 +181,7 @@ class _LoginViewState extends State<LoginView> {
                           // Sign up link
                           TextButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const SignUpView(),
-                                ),
-                              );
+                              context.go(AppRoutes.signup);
                             },
                             child: Text(
                               'Har du inget konto? Registrera dig här',
@@ -227,8 +240,8 @@ class _LoginViewState extends State<LoginView> {
               ),
             );
             
-            // Navigate back to previous page
-            Navigator.pop(context);
+            // Navigate back to home
+            context.go(AppRoutes.home);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
