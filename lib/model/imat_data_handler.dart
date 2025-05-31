@@ -304,10 +304,29 @@ class ImatDataHandler extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Loggar in användaren (placeholder för riktigt login)
-  void login(String username, String password) {
-    _user = User(username, password);
-    notifyListeners();
+  // Loggar in användaren genom att kontrollera credentials mot API:et
+  Future<bool> login(String username, String password) async {
+    try {
+      // Hämta användardata från servern för att verifiera credentials
+      String userJson = await InternetHandler.getUser();
+      
+      if (userJson.isNotEmpty) {
+        Map<String, dynamic> userMap = jsonDecode(userJson);
+        User storedUser = User.fromJson(userMap);
+        
+        // Kontrollera om username och password matchar
+        if (storedUser.userName == username && storedUser.password == password) {
+          _user = User(username, password);
+          notifyListeners();
+          return true;
+        }
+      }
+      
+      return false;
+    } catch (e) {
+      print('Login error: $e');
+      return false;
+    }
   }
 
   // Returnerar ProductDetail för produkten p

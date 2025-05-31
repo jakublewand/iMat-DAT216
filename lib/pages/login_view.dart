@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/pages/signup_view.dart';
+import 'package:imat/widgets/custom_text_field.dart';
+import 'package:imat/widgets/page_scaffold.dart';
 import 'package:provider/provider.dart';
 
 class LoginView extends StatefulWidget {
@@ -12,8 +14,10 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -24,107 +28,161 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[300],
-      body: SafeArea(
+    return PageScaffold(
+      backgroundColor: Colors.brown[50],
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.paddingLarge),
         child: Center(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(AppTheme.paddingLarge),
-              child: Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      icon: Icon(Icons.arrow_back),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                  ),
-                  SizedBox(height: AppTheme.paddingHuge),
-                  Container(
-                    constraints: BoxConstraints(maxWidth: 480),
-                    padding: EdgeInsets.symmetric(
-                      vertical: AppTheme.paddingHuge,
-                      horizontal: AppTheme.paddingLarge,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
-                          blurRadius: 16,
-                          offset: Offset(0, 4),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Card(
+              elevation: 8,
+              shadowColor: AppTheme.secondaryColor.withOpacity(0.2),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(AppTheme.paddingLarge),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Header with back button
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.arrow_back),
+                          onPressed: () => Navigator.pop(context),
                         ),
+                        Expanded(
+                          child: Text(
+                            'Välkommen tillbaka!',
+                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                              color: AppTheme.secondaryColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(width: 48), // Balance the back button
                       ],
                     ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Välkommen tillbaka!',
-                          style: Theme.of(context).textTheme.headlineMedium,
-                          textAlign: TextAlign.center,
-                        ),
-                        SizedBox(height: AppTheme.paddingLarge),
-                        _buildTextField(
-                          controller: _emailController,
-                          label: 'Email',
-                          hint: 'din.email@exempel.se',
-                          keyboardType: TextInputType.emailAddress,
-                          onClear: () => _emailController.clear(),
-                        ),
-                        SizedBox(height: AppTheme.paddingMedium),
-                        _buildTextField(
-                          controller: _passwordController,
-                          label: 'Lösenord',
-                          hint: 'Skriv ditt lösenord här...',
-                          obscureText: true,
-                          onClear: () => _passwordController.clear(),
-                        ),
-                        SizedBox(height: AppTheme.paddingLarge),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => SignUpView()),
-                                );
-                              },
-                              child: Text('Skapa nytt konto', style: TextStyle(color: Colors.brown[700])),
-                            ),
-                            SizedBox(width: AppTheme.paddingLarge),
-                            ElevatedButton(
-                              onPressed: () {
-                                // Simulate login
-                                Provider.of<ImatDataHandler>(context, listen: false).login(
-                                  _emailController.text,
-                                  _passwordController.text,
-                                );
-                                Navigator.pop(context);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.secondaryColor,
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
+                    const SizedBox(height: AppTheme.paddingLarge),
+                    
+                    // Login form
+                    Form(
+                      key: _formKey,
+                      child: Column(
+                        children: [
+                          CustomTextField(
+                            controller: _emailController,
+                            label: 'E-post',
+                            icon: Icons.email,
+                            keyboardType: TextInputType.emailAddress,
+                            hintText: 'din.email@exempel.se',
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Vänligen ange din e-postadress';
+                              }
+                              if (!value.contains('@') || !value.contains('.')) {
+                                return 'Vänligen ange en giltig e-postadress';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: AppTheme.paddingMedium),
+                          
+                          CustomPasswordField(
+                            controller: _passwordController,
+                            label: 'Lösenord',
+                            hintText: 'Skriv ditt lösenord här...',
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Vänligen ange ditt lösenord';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: AppTheme.paddingLarge),
+                          
+                          // Login button
+                          Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  AppTheme.accentColor,
+                                  AppTheme.accentColor.withOpacity(0.8),
+                                ],
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppTheme.accentColor.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
                                 ),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 32,
-                                  vertical: 12,
+                              ],
+                            ),
+                            child: ElevatedButton.icon(
+                              onPressed: _isLoading ? null : _performLogin,
+                              icon: _isLoading
+                                  ? const SizedBox(
+                                      width: 20,
+                                      height: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                  : const Icon(
+                                      Icons.login,
+                                      color: Colors.white,
+                                    ),
+                              label: Text(
+                                _isLoading ? 'Loggar in...' : 'Logga in',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
                                 ),
                               ),
-                              child: Text('Logga in'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 16,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+                          const SizedBox(height: AppTheme.paddingMedium),
+                          
+                          // Sign up link
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const SignUpView(),
+                                ),
+                              );
+                            },
+                            child: Text(
+                              'Har du inget konto? Registrera dig här',
+                              style: TextStyle(
+                                color: AppTheme.secondaryColor,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -133,56 +191,91 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    bool obscureText = false,
-    TextInputType? keyboardType,
-    required VoidCallback onClear,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: TextStyle(fontSize: 13, color: Colors.grey[700])),
-        SizedBox(height: 4),
-        TextField(
-          controller: controller,
-          obscureText: obscureText,
-          keyboardType: keyboardType,
-          cursorColor: Colors.brown[600],
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: Colors.brown[50],
-            hintText: hint,
-            hintStyle: TextStyle(
-              color: Colors.grey[400],
+  void _performLogin() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        final imatDataHandler = Provider.of<ImatDataHandler>(
+          context,
+          listen: false,
+        );
+
+        bool loginSuccessful = await imatDataHandler.login(
+          _emailController.text.trim(),
+          _passwordController.text,
+        );
+
+        if (mounted) {
+          if (loginSuccessful) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('Inloggning lyckades!'),
+                  ],
+                ),
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            );
+            
+            // Navigate back to previous page
+            Navigator.pop(context);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Row(
+                  children: [
+                    Icon(Icons.error, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('Felaktig e-post eller lösenord'),
+                  ],
+                ),
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            );
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Row(
+                children: [
+                  const Icon(Icons.error, color: Colors.white),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text('Fel vid inloggning: ${e.toString()}'),
+                  ),
+                ],
+              ),
+              backgroundColor: Colors.red,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
             ),
-            suffixIcon: controller.text.isNotEmpty
-                ? IconButton(
-                    icon: Icon(Icons.clear, size: 20),
-                    onPressed: onClear,
-                  )
-                : null,
-            contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-            border: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.brown[200]!),
-            ),
-            enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.brown[200]!),
-            ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.brown[400]!),
-            ),
-          ),
-          onChanged: (_) => setState(() {}),
-        ),
-        SizedBox(height: 4),
-        Text(
-          label == 'Email' ? 'Ange din e-postadress' : 'Ange ditt lösenord',
-          style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-        ),
-      ],
-    );
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
+    }
   }
 }

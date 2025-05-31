@@ -5,6 +5,7 @@ import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/customer.dart';
 import 'package:imat/model/imat/user.dart';
 import 'package:imat/model/imat_data_handler.dart';
+import 'package:imat/widgets/custom_text_field.dart';
 import 'package:imat/widgets/page_scaffold.dart';
 
 class SignUpView extends StatefulWidget {
@@ -27,8 +28,6 @@ class _SignUpViewState extends State<SignUpView> {
   final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
-  bool _isPasswordVisible = false;
-  bool _isConfirmPasswordVisible = false;
 
   @override
   void dispose() {
@@ -93,7 +92,7 @@ class _SignUpViewState extends State<SignUpView> {
                       key: _formKey,
                       child: Column(
                         children: [
-                          _buildTextField(
+                          CustomTextField(
                             controller: _firstNameController,
                             label: 'Förnamn',
                             icon: Icons.person,
@@ -106,7 +105,7 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                           const SizedBox(height: AppTheme.paddingMedium),
 
-                          _buildTextField(
+                          CustomTextField(
                             controller: _lastNameController,
                             label: 'Efternamn',
                             icon: Icons.person_outline,
@@ -119,7 +118,7 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                           const SizedBox(height: AppTheme.paddingMedium),
 
-                          _buildTextField(
+                          CustomTextField(
                             controller: _mobileNumberController,
                             label: 'Mobilnummer',
                             icon: Icons.phone_android,
@@ -133,7 +132,7 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                           const SizedBox(height: AppTheme.paddingMedium),
 
-                          _buildTextField(
+                          CustomTextField(
                             controller: _emailController,
                             label: 'E-post',
                             icon: Icons.email,
@@ -151,15 +150,9 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                           const SizedBox(height: AppTheme.paddingMedium),
 
-                          _buildPasswordField(
+                          CustomPasswordField(
                             controller: _passwordController,
                             label: 'Lösenord',
-                            isVisible: _isPasswordVisible,
-                            onVisibilityToggle: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
-                            },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Vänligen ange ett lösenord';
@@ -172,15 +165,9 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                           const SizedBox(height: AppTheme.paddingMedium),
 
-                          _buildPasswordField(
+                          CustomPasswordField(
                             controller: _confirmPasswordController,
                             label: 'Bekräfta lösenord',
-                            isVisible: _isConfirmPasswordVisible,
-                            onVisibilityToggle: () {
-                              setState(() {
-                                _isConfirmPasswordVisible = !_isConfirmPasswordVisible;
-                              });
-                            },
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Vänligen bekräfta ditt lösenord';
@@ -193,7 +180,7 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                           const SizedBox(height: AppTheme.paddingMedium),
 
-                          _buildTextField(
+                          CustomTextField(
                             controller: _addressController,
                             label: 'Adress',
                             icon: Icons.home,
@@ -210,7 +197,7 @@ class _SignUpViewState extends State<SignUpView> {
                             children: [
                               Expanded(
                                 flex: 2,
-                                child: _buildTextField(
+                                child: CustomTextField(
                                   controller: _postCodeController,
                                   label: 'Postnummer',
                                   icon: Icons.local_post_office,
@@ -229,7 +216,7 @@ class _SignUpViewState extends State<SignUpView> {
                               const SizedBox(width: AppTheme.paddingMedium),
                               Expanded(
                                 flex: 3,
-                                child: _buildTextField(
+                                child: CustomTextField(
                                   controller: _postAddressController,
                                   label: 'Ort',
                                   icon: Icons.location_city,
@@ -323,110 +310,6 @@ class _SignUpViewState extends State<SignUpView> {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String label,
-    required IconData icon,
-    TextInputType? keyboardType,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: AppTheme.secondaryColor),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.accentColor, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
-        prefixIcon: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: AppTheme.secondaryColor),
-        ),
-        filled: true,
-        fillColor: Colors.grey[50],
-      ),
-      validator: validator,
-      cursorColor: AppTheme.secondaryColor,
-    );
-  }
-
-  Widget _buildPasswordField({
-    required TextEditingController controller,
-    required String label,
-    required bool isVisible,
-    required VoidCallback onVisibilityToggle,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: TextInputType.visiblePassword,
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: AppTheme.secondaryColor),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.accentColor, width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
-        prefixIcon: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(Icons.lock, color: AppTheme.secondaryColor),
-        ),
-        suffixIcon: IconButton(
-          icon: Icon(
-            isVisible ? Icons.visibility : Icons.visibility_off,
-            color: AppTheme.secondaryColor,
-          ),
-          onPressed: onVisibilityToggle,
-        ),
-        filled: true,
-        fillColor: Colors.grey[50],
-      ),
-      validator: validator,
-      cursorColor: AppTheme.secondaryColor,
-      obscureText: !isVisible,
     );
   }
 

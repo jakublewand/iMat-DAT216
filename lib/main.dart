@@ -6,12 +6,14 @@ import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/model/internet_handler.dart';
 import 'package:imat/pages/main_view.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'dart:convert';
 
 import 'package:provider/provider.dart';
 import 'package:flutter/semantics.dart';
 
 void main() {
+  usePathUrlStrategy();
   runApp(
     ChangeNotifierProvider(
       create: (context) => ImatDataHandler(),
