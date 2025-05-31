@@ -97,7 +97,7 @@ class _AppNavbarState extends State<AppNavbar> {
   List<Widget> _loggedInButtons(BuildContext context, ImatDataHandler iMat) {
     return [
       ElevatedButton(
-        onPressed: () => context.go(AppRoutes.history),
+        onPressed: () => context.push(AppRoutes.history),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,
@@ -111,7 +111,7 @@ class _AppNavbarState extends State<AppNavbar> {
       ),
       SizedBox(width: 8),
       ElevatedButton(
-        onPressed: () => context.go(AppRoutes.account),
+        onPressed: () => context.push(AppRoutes.account),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,
@@ -143,7 +143,7 @@ class _AppNavbarState extends State<AppNavbar> {
   List<Widget> _loggedOutButtons(BuildContext context) {
     return [
       ElevatedButton(
-        onPressed: () => context.go(AppRoutes.login),
+        onPressed: () => context.push(AppRoutes.login),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,
@@ -157,7 +157,7 @@ class _AppNavbarState extends State<AppNavbar> {
       ),
       SizedBox(width: 8),
       ElevatedButton(
-        onPressed: () => context.go(AppRoutes.signup),
+        onPressed: () => context.push(AppRoutes.signup),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,

@@ -22,7 +22,7 @@ class CheckoutView extends StatelessWidget {
             children: [
               IconButton(
                 icon: Icon(Icons.arrow_back),
-                onPressed: () => context.pop(),
+                onPressed: () => GoRouter.of(context).pop(),
               ),
               Text(
                 'Ordersammanfattning',
@@ -66,7 +66,7 @@ class CheckoutView extends StatelessWidget {
                           return ElevatedButton(
                             onPressed: () {
                               iMat.placeOrder();
-                              context.go(AppRoutes.checkoutSuccess);
+                              context.replace(AppRoutes.checkoutSuccess);
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.secondaryColor,

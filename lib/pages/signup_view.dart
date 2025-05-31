@@ -69,7 +69,7 @@ class _SignUpViewState extends State<SignUpView> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.arrow_back),
-                          onPressed: () => context.pop(),
+                          onPressed: () => GoRouter.of(context).pop(),
                         ),
                         Expanded(
                           child: Text(
@@ -292,7 +292,7 @@ class _SignUpViewState extends State<SignUpView> {
 
                           // Login link
                           TextButton(
-                            onPressed: () => context.pop(),
+                            onPressed: () => GoRouter.of(context).pop(),
                             child: Text(
                               'Har du redan ett konto? Logga in här',
                               style: TextStyle(
@@ -370,7 +370,7 @@ class _SignUpViewState extends State<SignUpView> {
           );
 
           // Navigate back to login/previous page
-          context.pop();
+          GoRouter.of(context).pop();
         }
       } catch (e) {
         if (mounted) {

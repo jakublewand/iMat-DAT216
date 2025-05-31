@@ -58,7 +58,7 @@ class ProductCard extends StatelessWidget {
       elevation: 3,
       child: InkWell(
         onTap: () {
-          context.go(AppRoutes.productWithId(product.productId));
+          context.push(AppRoutes.productWithId(product.productId));
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -161,7 +161,7 @@ class AddToCartButton extends StatelessWidget {
                 controller: TextEditingController(
                   text: iMat.getShoppingCart().items.firstWhere(
                     (item) => item.product.productId == product.productId,
-                  ).amount.toString(),
+                  ).amount.toStringAsFixed(0),
                 ),
                 focusNode: focusNode,
                 keyboardType: TextInputType.number,

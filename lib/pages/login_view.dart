@@ -43,7 +43,7 @@ class _LoginViewState extends State<LoginView> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => context.pop(),
+          onPressed: () => GoRouter.of(context).pop(),
         ),
       ),
       body: Center(
@@ -181,7 +181,7 @@ class _LoginViewState extends State<LoginView> {
                           // Sign up link
                           TextButton(
                             onPressed: () {
-                              context.go(AppRoutes.signup);
+                              context.push(AppRoutes.signup);
                             },
                             child: Text(
                               'Har du inget konto? Registrera dig här',

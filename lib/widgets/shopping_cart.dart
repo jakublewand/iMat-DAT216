@@ -143,7 +143,7 @@ class ShoppingCart extends StatelessWidget {
               builder: (context, iMat, child) {
                 return ElevatedButton(
                   onPressed: iMat.shoppingCartTotal() > 0 ? () {
-                    context.go(AppRoutes.checkout);
+                    context.push(AppRoutes.checkout);
                   } : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.secondaryColor,
