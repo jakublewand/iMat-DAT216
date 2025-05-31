@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:imat/pages/main_view.dart';
 import 'package:imat/pages/login_view.dart';
@@ -6,6 +7,9 @@ import 'package:imat/pages/checkout_view.dart';
 import 'package:imat/pages/checkout_success_view.dart';
 import 'package:imat/pages/account_view.dart';
 import 'package:imat/pages/history_view.dart';
+import 'package:imat/widgets/product_lightbox.dart';
+import 'package:imat/model/imat_data_handler.dart';
+import 'package:provider/provider.dart';
 
 class AppRoutes {
   // Route names as constants
@@ -33,14 +37,14 @@ class AppRoutes {
               GoRoute(
                 path: home,
                 name: 'home',
-                builder: (context, state) => const MainView(),
+                builder: (context, state) => MainView(key: state.pageKey),
                 routes: [
                   GoRoute(
                     path: 'product/:id',
                     name: 'product',
-                    builder: (context, state) {
+                    pageBuilder: (context, state) {
                       final id = int.parse(state.pathParameters['id']!);
-                      return MainView(selectedProductId: id);
+                      return ProductModalPage(productId: id, key: state.pageKey);
                     },
                   ),
                 ],
@@ -81,4 +85,45 @@ class AppRoutes {
       ),
     ],
   );
+}
+
+class ProductModalPage extends Page {
+  final int productId;
+  
+  const ProductModalPage({required this.productId, super.key});
+
+  @override
+  Route createRoute(BuildContext context) {
+    return ModalBottomSheetRoute(
+      settings: this,
+      builder: (context) {
+        // Fix from GitHub issue: get the current page to access fresh productId
+        final currentPage = ModalRoute.of(context)?.settings as ProductModalPage?;
+        final id = currentPage?.productId ?? productId;
+        
+        return Consumer<ImatDataHandler>(
+          builder: (context, iMat, child) {
+            final product = iMat.getProduct(id);
+            
+            if (product == null) {
+              // Product not found, redirect to home
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                if (context.mounted) {
+                  context.go(AppRoutes.home);
+                }
+              });
+              return const SizedBox.shrink();
+            }
+            
+            return ProductLightbox(product: product);
+          },
+        );
+      },
+      constraints: const BoxConstraints(maxWidth: 1000),
+      isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
+      anchorPoint: const Offset(0, 0),
+    );
+  }
 } 
