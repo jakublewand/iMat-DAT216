@@ -21,7 +21,7 @@ class _ProductDetailViewState extends State<ProductDetailView> {
   @override
   void initState() {
     super.initState();
-    _showProductLightbox();
+    _checkAndShowLightbox();
   }
 
   @override
@@ -31,54 +31,94 @@ class _ProductDetailViewState extends State<ProductDetailView> {
       setState(() {
         _lightboxShown = false;
       });
-      _showProductLightbox();
+      _checkAndShowLightbox();
     }
+  }
+
+  void _checkAndShowLightbox() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      
+      final iMat = Provider.of<ImatDataHandler>(context, listen: false);
+      
+      // Check if products are loaded (not empty)
+      if (iMat.products.isEmpty) {
+        // Products are still loading, wait for them
+        return;
+      }
+      
+      _showProductLightbox();
+    });
   }
 
   void _showProductLightbox() {
     if (_lightboxShown) return;
     
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
+    final iMat = Provider.of<ImatDataHandler>(context, listen: false);
+    final product = iMat.getProduct(widget.productId);
+    
+    if (product != null) {
+      setState(() {
+        _lightboxShown = true;
+      });
       
-      final iMat = Provider.of<ImatDataHandler>(context, listen: false);
-      final product = iMat.getProduct(widget.productId);
-      
-      if (product != null) {
-        setState(() {
-          _lightboxShown = true;
-        });
-        
-        showModalBottomSheet(
-          anchorPoint: const Offset(0, 0),
-          context: context,
-          constraints: const BoxConstraints(maxWidth: 1000),
-          isScrollControlled: true,
-          isDismissible: true,
-          enableDrag: true,
-          builder: (BuildContext modalContext) {
-            return ProductLightbox(product: product);
-          },
-        ).then((_) {
-          // När lightboxen stängs, gå tillbaka till hem
-          if (mounted) {
-            context.go(AppRoutes.home);
-          }
-        });
-      } else {
-        // Om produkten inte finns, gå till hem
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            context.go(AppRoutes.home);
-          }
-        });
-      }
-    });
+      showModalBottomSheet(
+        anchorPoint: const Offset(0, 0),
+        context: context,
+        constraints: const BoxConstraints(maxWidth: 1000),
+        isScrollControlled: true,
+        isDismissible: true,
+        enableDrag: true,
+        builder: (BuildContext modalContext) {
+          return ProductLightbox(product: product);
+        },
+      ).then((_) {
+        // När lightboxen stängs, gå tillbaka till hem
+        if (mounted) {
+          context.go(AppRoutes.home);
+        }
+      });
+    } else {
+      // Om produkten inte finns (efter att produkter har laddats), gå till hem
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.go(AppRoutes.home);
+        }
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     // Visa MainView i bakgrunden medan lightboxen laddas
-    return const MainView();
+    return Consumer<ImatDataHandler>(
+      builder: (context, iMat, child) {
+        // If products are still loading, show loading indicator
+        if (iMat.products.isEmpty) {
+          return Scaffold(
+            body: Stack(
+              children: [
+                const MainView(),
+                Container(
+                  color: Colors.black.withOpacity(0.3),
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+        
+        // Products are loaded, check if we need to show lightbox
+        if (!_lightboxShown) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _showProductLightbox();
+          });
+        }
+        
+        return const MainView();
+      },
+    );
   }
 } 
