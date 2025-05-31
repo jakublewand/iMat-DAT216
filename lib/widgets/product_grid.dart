@@ -130,6 +130,8 @@ class AddToCartButton extends StatelessWidget {
   Widget build(BuildContext context) {
     var iMat = Provider.of<ImatDataHandler>(context, listen: true);
 
+    var focusNode = FocusNode();
+
     if (iMat.getShoppingCart().items.any(
       (item) => item.product.productId == product.productId,
     )) {
@@ -143,15 +145,34 @@ class AddToCartButton extends StatelessWidget {
           ButtonSegment(value: "decrease", icon: Icon(Icons.remove)),
           ButtonSegment(
             value: "amount",
-            label: Text(
-              iMat
-                  .getShoppingCart()
-                  .items
-                  .firstWhere(
+            label: SizedBox(
+              height: 20,
+              child: TextField(
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                maxLength: 2,
+                cursorColor: Colors.black,
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  isCollapsed: true,
+                  contentPadding: EdgeInsets.zero,
+                  counter: SizedBox(),
+                ),
+                controller: TextEditingController(
+                  text: iMat.getShoppingCart().items.firstWhere(
                     (item) => item.product.productId == product.productId,
-                  )
-                  .amount
-                  .toString(),
+                  ).amount.toString(),
+                ),
+                focusNode: focusNode,
+                keyboardType: TextInputType.number,
+                onChanged: (value) => iMat.shoppingCartUpdate(
+                  iMat.getShoppingCart().items.firstWhere(
+                    (item) => item.product.productId == product.productId,
+                  ),
+                  delta: double.parse(value),
+                  absolute: true,
+                ),
+              ),
             ),
           ),
           ButtonSegment(value: "increase", icon: Icon(Icons.add)),
@@ -174,34 +195,7 @@ class AddToCartButton extends StatelessWidget {
               delta: 1,
             );
           } else if (value.first == "amount") {
-            showDialog(
-              context: context,
-              builder:
-                  (context) => AlertDialog(
-                    title: Text('Antal'),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: Text('Stäng'),
-                      ),
-                    ],
-                    content: TextField(
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      maxLength: 2,
-                      autofocus: true,
-                      keyboardType: TextInputType.number,
-                      onChanged:
-                          (value) => iMat.shoppingCartUpdate(
-                            iMat.getShoppingCart().items.firstWhere(
-                              (item) =>
-                                  item.product.productId == product.productId,
-                            ),
-                            delta: double.parse(value),
-                            absolute: true,
-                          ),
-                    ),
-                  ),
-            );
+            FocusScope.of(context).requestFocus(focusNode);
           }
         },
       );
