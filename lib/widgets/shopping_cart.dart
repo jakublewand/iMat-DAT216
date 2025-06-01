@@ -8,6 +8,7 @@ import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/routes.dart';
 import 'package:imat/widgets/custom_components.dart';
 import 'package:imat/widgets/product_grid.dart';
+import 'package:imat/widgets/sale_banner.dart';
 import 'package:provider/provider.dart';
 
 class ShoppingCart extends StatelessWidget {
@@ -182,11 +183,13 @@ class ShoppingCartItemCard extends StatelessWidget {
                     item.product.name,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
+                  SalePriceDisplay(
+                    product: item.product,
+                    priceStyle: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey[600]),
+                  ),
                   Text(
                     item.totalString,
-                    style: Theme.of(
-                      context,
-                    ).textTheme.titleSmall?.copyWith(color: Colors.grey[600]),
+                    style: Theme.of(context).textTheme.titleSmall?.copyWith(color: Colors.grey[600]),
                   ),
                 ],
               ),

@@ -1,5 +1,8 @@
 // ignore_for_file: constant_identifier_names
 
+// MOCK Sales prices for products
+const extraPriceOriginalPrice = {87: 35.50, 95: 19.95, 108: 25.00, 111: 19.50, 48: 37.95, 30: 59.25};
+
 enum ProductCategory {
   POD,
   BREAD,
@@ -81,7 +84,15 @@ class Product {
     return productId == otherProduct.productId;
   }
 
-  String get priceString => '${price.toStringAsFixed(2).replaceAll('.', ',')} $unit';
+  double? get originalPrice {
+    if (extraPriceOriginalPrice.containsKey(productId)) {
+      return extraPriceOriginalPrice[productId];
+    }
+    return null;
+  }
+
+  String get priceString =>
+      '${price.toStringAsFixed(2).replaceAll('.', ',')} ${unit.replaceAll("förp", "pkt").trim()}';
 }
 
 ProductCategory _category(String cat) {
