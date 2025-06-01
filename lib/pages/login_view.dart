@@ -18,6 +18,7 @@ class _LoginViewState extends State<LoginView> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  String? _loginError;
 
   @override
   void dispose() {
@@ -91,6 +92,33 @@ class _LoginViewState extends State<LoginView> {
                       key: _formKey,
                       child: Column(
                         children: [
+                          // Show login error if exists
+                          if (_loginError != null) ...[
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade50,
+                                border: Border.all(color: Colors.red.shade200),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.error, color: Colors.red.shade600, size: 20),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      _loginError!,
+                                      style: TextStyle(
+                                        color: Colors.red.shade700,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: AppTheme.paddingMedium),
+                          ],
                           CustomTextField(
                             controller: _emailController,
                             label: 'E-post',
@@ -106,6 +134,14 @@ class _LoginViewState extends State<LoginView> {
                               }
                               return null;
                             },
+                            onChanged: (value) {
+                              // Clear login error when user starts typing
+                              if (_loginError != null) {
+                                setState(() {
+                                  _loginError = null;
+                                });
+                              }
+                            },
                           ),
                           const SizedBox(height: AppTheme.paddingMedium),
                           
@@ -120,6 +156,14 @@ class _LoginViewState extends State<LoginView> {
                                 return 'Vänligen ange ditt lösenord';
                               }
                               return null;
+                            },
+                            onChanged: (value) {
+                              // Clear login error when user starts typing
+                              if (_loginError != null) {
+                                setState(() {
+                                  _loginError = null;
+                                });
+                              }
                             },
                           ),
                           const SizedBox(height: AppTheme.paddingLarge),
@@ -173,13 +217,13 @@ class _LoginViewState extends State<LoginView> {
           listen: false,
         );
 
-        bool loginSuccessful = await imatDataHandler.login(
+        String? loginError = await imatDataHandler.login(
           _emailController.text.trim(),
           _passwordController.text,
         );
 
         if (mounted) {
-          if (loginSuccessful) {
+          if (loginError == null) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: const Row(
@@ -200,22 +244,9 @@ class _LoginViewState extends State<LoginView> {
             // Navigate back to home
             context.go(AppRoutes.home);
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: const Row(
-                  children: [
-                    Icon(Icons.error, color: Colors.white),
-                    SizedBox(width: 8),
-                    Text('Felaktig e-post eller lösenord'),
-                  ],
-                ),
-                backgroundColor: Colors.red,
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            );
+            setState(() {
+              _loginError = loginError;
+            });
           }
         }
       } catch (e) {

@@ -15,12 +15,17 @@ import 'package:imat/model/internet_handler.dart';
 import 'package:imat/model/product_filter.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ImatDataHandler extends ChangeNotifier {
   // Initializes the IMatDataHandler
   ImatDataHandler() {
     _setUp();
   }
+
+  // Login state management
+  bool _isLoggedIn = false;
+  static const String _loginKey = 'loggedIn';
 
   // Never changing, only loaded on startup
   List<Product> get products => _products;
@@ -296,16 +301,30 @@ class ImatDataHandler extends ChangeNotifier {
   }
 
   // Kontrollerar om användaren är inloggad
-  bool get isLoggedIn => _user.userName.isNotEmpty;
+  bool get isLoggedIn => _isLoggedIn;
 
-  // Loggar ut användaren
-  void logout() {
-    _user = User('', '');
+  // Spara login-status till SharedPreferences
+  Future<void> _saveLoginState(bool loggedIn) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_loginKey, loggedIn);
+    _isLoggedIn = loggedIn;
     notifyListeners();
   }
 
+  // Ladda login-status från SharedPreferences
+  Future<void> _loadLoginState() async {
+    final prefs = await SharedPreferences.getInstance();
+    _isLoggedIn = prefs.getBool(_loginKey) ?? false;
+  }
+
+  // Loggar ut användaren
+  Future<void> logout() async {
+    _user = User('', '');
+    await _saveLoginState(false);
+  }
+
   // Loggar in användaren genom att kontrollera credentials mot API:et
-  Future<bool> login(String username, String password) async {
+  Future<String?> login(String username, String password) async {
     try {
       // Hämta användardata från servern för att verifiera credentials
       String userJson = await InternetHandler.getUser();
@@ -317,15 +336,41 @@ class ImatDataHandler extends ChangeNotifier {
         // Kontrollera om username och password matchar
         if (storedUser.userName == username && storedUser.password == password) {
           _user = User(username, password);
-          notifyListeners();
-          return true;
+          await _saveLoginState(true);
+          return null; // Success, no error
         }
       }
       
-      return false;
+      return 'Felaktig e-post eller lösenord';
     } catch (e) {
       print('Login error: $e');
-      return false;
+      return 'Ett fel uppstod vid inloggning';
+    }
+  }
+
+  // Registrera ny användare och logga in automatiskt
+  Future<String?> registerUser(String username, String password, Customer customer) async {
+    try {
+      // Create new user
+      final user = User(username, password);
+      
+      // Set user data on server (these are async)
+      setUser(user);
+      setCustomer(customer);
+      setCreditCard(CreditCard.empty);
+      
+      // Clear cart and filters (these are sync)
+      shoppingCartClear();
+      clearAllFilters();
+      
+      // Set current user and log in
+      _user = user;
+      await _saveLoginState(true);
+      
+      return null; // Success, no error
+    } catch (e) {
+      print('Registration error: $e');
+      return 'Ett fel uppstod vid registrering';
     }
   }
 
@@ -696,6 +741,9 @@ import 'package:http/http.dart' as http;
   void _setUp() async {
     InternetHandler.kGroupId = Settings.groupId;
 
+    // Load login state first
+    await _loadLoginState();
+
     // Fetching all products
     var response = await InternetHandler.getProducts();
 
@@ -728,37 +776,48 @@ import 'package:http/http.dart' as http;
     // Preload images for the first few products to improve initial loading experience
     preloadInitialImages();
 
-    // Fetching CreditCard, Customer & User
-    response = await InternetHandler.getCreditCard();
-    var singleJson = jsonDecode(response);
-    _creditCard = CreditCard.fromJson(singleJson);
+    // Only fetch user data if logged in
+    if (_isLoggedIn) {
+      // Fetching CreditCard, Customer & User
+      response = await InternetHandler.getCreditCard();
+      var singleJson = jsonDecode(response);
+      _creditCard = CreditCard.fromJson(singleJson);
 
-    response = await InternetHandler.getCustomer();
-    singleJson = jsonDecode(response);
-    _customer = Customer.fromJson(singleJson);
+      response = await InternetHandler.getCustomer();
+      singleJson = jsonDecode(response);
+      _customer = Customer.fromJson(singleJson);
 
-    response = await InternetHandler.getUser();
-    singleJson = jsonDecode(response);
-    _user = User.fromJson(singleJson);
+      response = await InternetHandler.getUser();
+      singleJson = jsonDecode(response);
+      _user = User.fromJson(singleJson);
 
-    //print('User ${singleJson}');
+      //print('User ${singleJson}');
 
-    response = await InternetHandler.getOrders();
-    singleJson = jsonDecode(response);
+      response = await InternetHandler.getOrders();
+      singleJson = jsonDecode(response);
 
-    jsonData = jsonDecode(response);
+      jsonData = jsonDecode(response);
 
-    _orders.clear();
-    _orders.addAll(jsonData.map((item) => Order.fromJson(item)).toList());
+      _orders.clear();
+      _orders.addAll(jsonData.map((item) => Order.fromJson(item)).toList());
 
-    response = await InternetHandler.getShoppingCart();
+      response = await InternetHandler.getShoppingCart();
 
-    //print('Cart $response');
-    singleJson = jsonDecode(response);
-    _shoppingCart = ShoppingCart.fromJson(singleJson);
+      //print('Cart $response');
+      singleJson = jsonDecode(response);
+      _shoppingCart = ShoppingCart.fromJson(singleJson);
 
-    response = await InternetHandler.getExtras();
-    _extras = jsonDecode(response);
+      response = await InternetHandler.getExtras();
+      _extras = jsonDecode(response);
+    } else {
+      // Initialize with empty data when not logged in
+      _creditCard = CreditCard.empty;
+      _customer = Customer('', '', '', '', '', '', '', '');
+      _user = User('', '');
+      _orders.clear();
+      _shoppingCart = ShoppingCart([]);
+      _extras = {};
+    }
 
     /* Testcode
 
