@@ -84,8 +84,11 @@ class _CardDetailsState extends State<CardDetails> {
   }
 
   void _loadCardData(CreditCard card) {
-    // Check if this is real data (not just empty defaults) and we haven't loaded yet
-    if (!_hasLoadedData && (card.holdersName.isNotEmpty || card.cardNumber.isNotEmpty)) {
+    // Check if this is real data (not just empty defaults)
+    final hasRealData = card.holdersName.isNotEmpty || card.cardNumber.isNotEmpty;
+    
+    // Load data if we haven't loaded yet and we now have real data
+    if (!_hasLoadedData && hasRealData) {
       _typeController.text = card.cardType;
       _nameController.text = card.holdersName;
       

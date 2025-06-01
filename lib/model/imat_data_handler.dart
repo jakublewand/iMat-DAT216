@@ -337,6 +337,10 @@ class ImatDataHandler extends ChangeNotifier {
         if (storedUser.userName == username && storedUser.password == password) {
           _user = User(username, password);
           await _saveLoginState(true);
+          
+          // Load user data immediately after successful login
+          await _loadUserData();
+          
           return null; // Success, no error
         }
       }
@@ -345,6 +349,41 @@ class ImatDataHandler extends ChangeNotifier {
     } catch (e) {
       print('Login error: $e');
       return 'Ett fel uppstod vid inloggning';
+    }
+  }
+
+  // Ladda användardata (customer, creditcard, orders, etc.) efter inloggning
+  Future<void> _loadUserData() async {
+    try {
+      // Fetching CreditCard, Customer & User
+      var response = await InternetHandler.getCreditCard();
+      var singleJson = jsonDecode(response);
+      _creditCard = CreditCard.fromJson(singleJson);
+
+      response = await InternetHandler.getCustomer();
+      singleJson = jsonDecode(response);
+      _customer = Customer.fromJson(singleJson);
+
+      response = await InternetHandler.getUser();
+      singleJson = jsonDecode(response);
+      _user = User.fromJson(singleJson);
+
+      response = await InternetHandler.getOrders();
+      singleJson = jsonDecode(response);
+      var jsonData = jsonDecode(response);
+      _orders.clear();
+      _orders.addAll(jsonData.map((item) => Order.fromJson(item)).toList());
+
+      response = await InternetHandler.getShoppingCart();
+      singleJson = jsonDecode(response);
+      _shoppingCart = ShoppingCart.fromJson(singleJson);
+
+      response = await InternetHandler.getExtras();
+      _extras = jsonDecode(response);
+      
+      notifyListeners(); // Notify UI that user data has been loaded
+    } catch (e) {
+      print('Error loading user data: $e');
     }
   }
 

@@ -58,11 +58,13 @@ class _CustomerDetailsState extends State<CustomerDetails> {
   }
 
   void _loadCustomerData(Customer customer) {
-    // Check if this is real data (not just empty defaults) and we haven't loaded yet
-    if (!_hasLoadedData &&
-        (customer.firstName.isNotEmpty ||
-            customer.lastName.isNotEmpty ||
-            customer.email.isNotEmpty)) {
+    // Check if this is real data (not just empty defaults)
+    final hasRealData = customer.firstName.isNotEmpty ||
+        customer.lastName.isNotEmpty ||
+        customer.email.isNotEmpty;
+    
+    // Load data if we haven't loaded yet, or if we now have real data but didn't before
+    if (!_hasLoadedData && hasRealData) {
       _firstNameController.text = customer.firstName;
       _lastNameController.text = customer.lastName;
       _mobileNumberController.text = customer.mobilePhoneNumber;

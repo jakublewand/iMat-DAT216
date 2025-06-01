@@ -141,15 +141,26 @@ class ShoppingCart extends StatelessWidget {
             padding: EdgeInsets.all(AppTheme.paddingMedium),
             child: Consumer<ImatDataHandler>(
               builder: (context, iMat, child) {
+                final hasItems = iMat.shoppingCartTotal() > 0;
+                final isLoggedIn = iMat.isLoggedIn;
+                
                 return CustomButton(
-                  onPressed:
-                      iMat.shoppingCartTotal() > 0
-                          ? () {
-                            context.go(AppRoutes.checkout);
-                          }
-                          : null,
-                  text: 'Till kassan',
-                  icon: Icons.shopping_cart,
+                  onPressed: hasItems
+                      ? () {
+                        // Check if user is logged in before going to checkout
+                        if (isLoggedIn) {
+                          context.go(AppRoutes.checkout);
+                        } else {
+                          context.go('${AppRoutes.login}?returnTo=${AppRoutes.checkout}');
+                        }
+                      }
+                      : null,
+                  text: !hasItems 
+                      ? 'Till kassan' 
+                      : !isLoggedIn 
+                          ? 'Logga in för att handla'
+                          : 'Till kassan',
+                  icon: !isLoggedIn && hasItems ? Icons.login : Icons.shopping_cart,
                 );
               },
             ),
