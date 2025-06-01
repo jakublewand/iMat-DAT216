@@ -41,6 +41,10 @@ class Order {
     return total;
   }
 
+  String get totalString {
+    return getTotal().toStringAsFixed(2).replaceAll('.', ',');
+  }
+
   static const _orderNumber = 'orderNumber';
   static const _date = 'date';
   static const _items = 'items';

@@ -213,7 +213,7 @@ class _LoginViewState extends State<LoginView> {
       try {
         final imatDataHandler = Provider.of<ImatDataHandler>(
           context,
-          listen: false,
+          listen: true,
         );
 
         bool loginSuccessful = await imatDataHandler.login(

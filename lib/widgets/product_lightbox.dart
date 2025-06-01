@@ -15,7 +15,7 @@ class ProductLightbox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var iMat = Provider.of<ImatDataHandler>(context, listen: false);
+    var iMat = Provider.of<ImatDataHandler>(context, listen: true);
 
     if (product == null) {
       return Container(

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:imat/widgets/page_scaffold.dart';
+import 'package:imat/widgets/shopping_cart.dart';
 
 // Stateful eftersom man behöver komma ihåg vilken order som är vald
 // När den valda ordern ändras så ritas gränssnittet om pga
@@ -21,9 +22,7 @@ class _HistoryViewState extends State<HistoryView> {
 
   @override
   Widget build(BuildContext context) {
-    // Provider.of eftersom denna vy inte behöver veta något om
-    // ändringar i iMats data. Den visar bara det som finns nu
-    var iMat = Provider.of<ImatDataHandler>(context, listen: false);
+    var iMat = Provider.of<ImatDataHandler>(context, listen: true);
 
     // Hämta datan som ska visas
     var orders = iMat.orders;
@@ -42,7 +41,7 @@ class _HistoryViewState extends State<HistoryView> {
                   // When a user taps on an item the function _selectOrder is called
                   // The Material widget is need to make hovering pliancy effects visible
                   child: Material(
-                    color: Theme.of(context).colorScheme.primaryContainer,
+                    color: Theme.of(context).colorScheme.background,
                     child: _ordersList(context, orders, _selectOrder),
                   ),
                 ),
@@ -58,18 +57,83 @@ class _HistoryViewState extends State<HistoryView> {
   }
 
   Widget _orderInfo(Order order, Function onTap) {
-    return Column(
-      children: [
-        ListTile(
-          onTap: () => onTap(order),
-          title: Text('Order ${order.orderNumber}, ${_formatDateTime(order.date)}'),
+    final isSelected = _selectedOrder?.orderNumber == order.orderNumber;
+    
+    return Container(
+      margin: EdgeInsets.symmetric(
+        horizontal: AppTheme.paddingSmall,
+        vertical: AppTheme.paddingTiny,
+      ),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: isSelected 
+          ? Border.all(color: AppTheme.secondaryColor, width: 1)
+          : Border.all(color: Colors.grey[400]!, width: 1),
+      ),
+      child: InkWell(
+        onTap: () => onTap(order),
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: EdgeInsets.all(AppTheme.paddingMedium),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppTheme.paddingSmall,
+                      vertical: AppTheme.paddingTiny,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppTheme.secondaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      'Order ${order.orderNumber}',
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: AppTheme.secondaryColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  Spacer(),
+                  Icon(
+                    Icons.chevron_right,
+                    color: Colors.grey[900],
+                    size: 20,
+                  ),
+                ],
+              ),
+              SizedBox(height: AppTheme.paddingSmall),
+              Text(
+                _formatDateTime(order.date),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: AppTheme.paddingSmall),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${order.items.length} ${order.items.length == 1 ? 'produkt' : 'produkter'}',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.grey[700],
+                    ),
+                  ),
+                  Text(
+                    '${order.totalString} kr',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-        Divider(
-          height: 1,
-          thickness: 1,
-          color: Colors.black,
-        ),
-      ],
+      ),
     );
   }
 
@@ -94,8 +158,16 @@ class _HistoryViewState extends State<HistoryView> {
 
   // This uses the package intl
   String _formatDateTime(DateTime dt) {
-    final formatter = DateFormat('yyyy-MM-dd, HH:mm');
-    return formatter.format(dt);
+    // If today, show HH:mm, otherwise show yyyy-MM-dd, duration 1 day does not work, because you can order yesterday
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    if (dt.isAfter(startOfDay)) {
+      final formatter = DateFormat('HH:mm');
+      return "Idag ${formatter.format(dt)}";
+    } else {
+      final formatter = DateFormat('yyyy-MM-dd');
+      return formatter.format(dt);
+    }
   }
 
   // THe view to the right.
@@ -105,8 +177,6 @@ class _HistoryViewState extends State<HistoryView> {
   // which is a what to use to create an empty widget.
   Widget _orderDetails(Order? order) {
     if (order != null) {
-      var iMat = Provider.of<ImatDataHandler>(context, listen: false);
-      
       return Padding(
         padding: EdgeInsets.all(AppTheme.paddingMedium),
         child: Column(
@@ -143,19 +213,8 @@ class _HistoryViewState extends State<HistoryView> {
                       padding: EdgeInsets.all(AppTheme.paddingMedium),
                       child: Row(
                         children: [
-                          // Product image
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.grey[200],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: iMat.getImage(item.product),
-                            ),
-                          ),
+                          // Product image using SmallItemImage component
+                          SmallItemImage(item: item),
                           SizedBox(width: AppTheme.paddingMedium),
                           
                           // Product details
@@ -165,19 +224,19 @@ class _HistoryViewState extends State<HistoryView> {
                               children: [
                                 Text(
                                   item.product.name,
-                                  style: Theme.of(context).textTheme.titleSmall,
+                                  style: Theme.of(context).textTheme.bodyLarge,
                                 ),
                                 SizedBox(height: 4),
                                 Text(
                                   item.product.priceString,
-                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: Colors.grey[600],
                                   ),
                                 ),
                                 SizedBox(height: 4),
                                 Text(
-                                  'Antal: ${item.amount}',
-                                  style: Theme.of(context).textTheme.bodySmall,
+                                  'Antal: ${item.amount.toStringAsFixed(0)}',
+                                  style: Theme.of(context).textTheme.bodyMedium,
                                 ),
                               ],
                             ),
@@ -186,7 +245,7 @@ class _HistoryViewState extends State<HistoryView> {
                           // Item total
                           Text(
                             item.totalString,
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -216,7 +275,7 @@ class _HistoryViewState extends State<HistoryView> {
                     ),
                   ),
                   Text(
-                    order.getTotal().toStringAsFixed(2).replaceAll('.', ','),
+                    '${order.getTotal().toStringAsFixed(2).replaceAll('.', ',')} kr',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppTheme.secondaryColor,

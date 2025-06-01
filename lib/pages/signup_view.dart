@@ -324,7 +324,7 @@ class _SignUpViewState extends State<SignUpView> {
       try {
         final imatDataHandler = Provider.of<ImatDataHandler>(
           context,
-          listen: false,
+          listen: true,
         );
 
         // Create new customer with form data
