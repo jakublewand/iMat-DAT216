@@ -192,8 +192,8 @@ class _AppNavbarState extends State<AppNavbar> {
                 foregroundColor: AppTheme.secondaryColor,
                 backgroundColor: AppTheme.primaryColor,
               ),
-              onPressed: () {
-                iMat.logout();
+              onPressed: () async {
+                await iMat.logout();
                 Navigator.pop(context);
                 context.go(AppRoutes.home);
               },

@@ -297,39 +297,54 @@ class _SignUpViewState extends State<SignUpView> {
           _postAddressController.text.trim(),
         );
 
-        // Create new user with email as username and provided password
-        final user = User(
+        // Register user with automatic login
+        String? registrationError = await imatDataHandler.registerUser(
           _emailController.text.trim(), // email as username
           _passwordController.text,
+          customer,
         );
 
-        // Set customer data (always group 22)
-        imatDataHandler.setCustomer(customer);
-        imatDataHandler.setCreditCard(CreditCard.empty);
-        imatDataHandler.clearAllFilters();
-        imatDataHandler.shoppingCartClear();
-        imatDataHandler.setUser(user);
-
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Row(
-                children: [
-                  Icon(Icons.check_circle, color: Colors.white),
-                  SizedBox(width: 8),
-                  Text('Konto skapat framgångsrikt!'),
-                ],
+          if (registrationError == null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('Konto skapat och inloggning lyckades!'),
+                  ],
+                ),
+                backgroundColor: Colors.green,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          );
+            );
 
-          // Navigate back to login/previous page
-          context.go(AppRoutes.home);
+            // Navigate back to home
+            context.go(AppRoutes.home);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.error, color: Colors.white),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(registrationError),
+                    ),
+                  ],
+                ),
+                backgroundColor: Colors.red,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+            );
+          }
         }
       } catch (e) {
         if (mounted) {
