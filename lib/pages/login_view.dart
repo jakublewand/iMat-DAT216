@@ -19,6 +19,18 @@ class _LoginViewState extends State<LoginView> {
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   String? _loginError;
+  String? _returnTo;
+
+  @override
+  void initState() {
+    super.initState();
+    // Get return path from URL parameters
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final uri = GoRouter.of(context).routeInformationProvider.value.location;
+      final queryParams = Uri.parse(uri).queryParameters;
+      _returnTo = queryParams['returnTo'];
+    });
+  }
 
   @override
   void dispose() {
@@ -241,8 +253,12 @@ class _LoginViewState extends State<LoginView> {
               ),
             );
             
-            // Navigate back to home
-            context.go(AppRoutes.home);
+            // Navigate to return path or home
+            if (_returnTo != null && _returnTo!.isNotEmpty) {
+              context.go(_returnTo!);
+            } else {
+              context.go(AppRoutes.home);
+            }
           } else {
             setState(() {
               _loginError = loginError;

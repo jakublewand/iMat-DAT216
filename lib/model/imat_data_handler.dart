@@ -25,6 +25,7 @@ class ImatDataHandler extends ChangeNotifier {
 
   // Login state management
   bool _isLoggedIn = false;
+  bool _isInitialized = false; // Track if initial loading is complete
   static const String _loginKey = 'loggedIn';
 
   // Never changing, only loaded on startup
@@ -34,6 +35,9 @@ class ImatDataHandler extends ChangeNotifier {
 
   // Access a list of all previous orders
   List<Order> get orders => _orders;
+
+  // Check if the data handler has finished initial loading
+  bool get isInitialized => _isInitialized;
 
   //
   // Handle product filtering
@@ -321,6 +325,12 @@ class ImatDataHandler extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_loginKey, loggedIn);
     _isLoggedIn = loggedIn;
+    
+    // Ensure initialized flag is set (in case login happens before setup is complete)
+    if (!_isInitialized) {
+      _isInitialized = true;
+    }
+    
     notifyListeners();
   }
 
@@ -350,6 +360,10 @@ class ImatDataHandler extends ChangeNotifier {
         if (storedUser.userName == username && storedUser.password == password) {
           _user = User(username, password);
           await _saveLoginState(true);
+          
+          // Load user data immediately after successful login
+          await _loadUserData();
+          
           return null; // Success, no error
         }
       }
@@ -358,6 +372,41 @@ class ImatDataHandler extends ChangeNotifier {
     } catch (e) {
       print('Login error: $e');
       return 'Ett fel uppstod vid inloggning';
+    }
+  }
+
+  // Ladda användardata (customer, creditcard, orders, etc.) efter inloggning
+  Future<void> _loadUserData() async {
+    try {
+      // Fetching CreditCard, Customer & User
+      var response = await InternetHandler.getCreditCard();
+      var singleJson = jsonDecode(response);
+      _creditCard = CreditCard.fromJson(singleJson);
+
+      response = await InternetHandler.getCustomer();
+      singleJson = jsonDecode(response);
+      _customer = Customer.fromJson(singleJson);
+
+      response = await InternetHandler.getUser();
+      singleJson = jsonDecode(response);
+      _user = User.fromJson(singleJson);
+
+      response = await InternetHandler.getOrders();
+      singleJson = jsonDecode(response);
+      var jsonData = jsonDecode(response);
+      _orders.clear();
+      _orders.addAll(jsonData.map((item) => Order.fromJson(item)).toList());
+
+      response = await InternetHandler.getShoppingCart();
+      singleJson = jsonDecode(response);
+      _shoppingCart = ShoppingCart.fromJson(singleJson);
+
+      response = await InternetHandler.getExtras();
+      _extras = jsonDecode(response);
+      
+      notifyListeners(); // Notify UI that user data has been loaded
+    } catch (e) {
+      print('Error loading user data: $e');
     }
   }
 
@@ -784,11 +833,6 @@ import 'package:http/http.dart' as http;
       _favorites[product.productId] = product;
     }
 
-    notifyListeners();
-
-    // Preload images for the first few products to improve initial loading experience
-    preloadInitialImages();
-
     // Only fetch user data if logged in
     if (_isLoggedIn) {
       // Fetching CreditCard, Customer & User
@@ -832,6 +876,9 @@ import 'package:http/http.dart' as http;
       _extras = {};
     }
 
+    // Mark as initialized after all loading is complete
+    _isInitialized = true;
+
     /* Testcode
 
     print('New extras $_extras');
@@ -849,5 +896,8 @@ import 'package:http/http.dart' as http;
      */
 
     notifyListeners();
+
+    // Preload images for the first few products to improve initial loading experience
+    preloadInitialImages();
   }
 }
