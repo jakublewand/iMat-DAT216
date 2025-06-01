@@ -83,6 +83,19 @@ class ImatDataHandler extends ChangeNotifier {
       result = filter.apply(result);
     }
     
+    // Sort products so that sale items (with originalPrice) appear first
+    result.sort((a, b) {
+      final aOnSale = a.originalPrice != null;
+      final bOnSale = b.originalPrice != null;
+      
+      // If one is on sale and the other is not, prioritize the sale item
+      if (aOnSale && !bOnSale) return -1;
+      if (!aOnSale && bOnSale) return 1;
+      
+      // If both are on sale or both are not on sale, maintain original order
+      return 0;
+    });
+    
     return result;
   }
 
