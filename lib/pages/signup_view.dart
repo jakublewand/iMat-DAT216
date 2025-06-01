@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:imat/model/imat/credit_card.dart';
+import 'package:imat/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/customer.dart';
@@ -69,7 +70,7 @@ class _SignUpViewState extends State<SignUpView> {
                       children: [
                         IconButton(
                           icon: const Icon(Icons.arrow_back),
-                          onPressed: () => GoRouter.of(context).pop(),
+                          onPressed: () => context.push(AppRoutes.home),
                         ),
                         Expanded(
                           child: Text(
@@ -292,7 +293,7 @@ class _SignUpViewState extends State<SignUpView> {
 
                           // Login link
                           TextButton(
-                            onPressed: () => GoRouter.of(context).pop(),
+                            onPressed: () => context.go(AppRoutes.home),
                             child: Text(
                               'Har du redan ett konto? Logga in här',
                               style: TextStyle(
@@ -370,7 +371,7 @@ class _SignUpViewState extends State<SignUpView> {
           );
 
           // Navigate back to login/previous page
-          GoRouter.of(context).pop();
+          context.go(AppRoutes.home);
         }
       } catch (e) {
         if (mounted) {

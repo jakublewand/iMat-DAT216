@@ -1,12 +1,13 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/shopping_item.dart';
 import 'package:imat/model/imat_data_handler.dart';
-import 'package:imat/widgets/product_grid.dart';
 import 'package:imat/routes.dart';
+import 'package:imat/widgets/product_grid.dart';
 import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
-import 'dart:math';
 
 class ShoppingCart extends StatelessWidget {
   const ShoppingCart({super.key});
@@ -20,9 +21,7 @@ class ShoppingCart extends StatelessWidget {
       width: minWidth,
       decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(
-          left: BorderSide(color: Colors.grey[300]!, width: 1),
-        ),
+        border: Border(left: BorderSide(color: Colors.grey[300]!, width: 1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -142,9 +141,12 @@ class ShoppingCart extends StatelessWidget {
             child: Consumer<ImatDataHandler>(
               builder: (context, iMat, child) {
                 return ElevatedButton(
-                  onPressed: iMat.shoppingCartTotal() > 0 ? () {
-                    context.push(AppRoutes.checkout);
-                  } : null,
+                  onPressed:
+                      iMat.shoppingCartTotal() > 0
+                          ? () {
+                            context.go(AppRoutes.checkout);
+                          }
+                          : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.secondaryColor,
                     foregroundColor: Colors.white,
@@ -170,26 +172,13 @@ class ShoppingCartItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var iMat = Provider.of<ImatDataHandler>(context, listen: true);
-
     return Card(
       child: Padding(
-        padding: EdgeInsets.all(AppTheme.paddingMedium),
+        padding: const EdgeInsets.all(AppTheme.paddingMedium),
         child: Row(
           children: [
-            Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: iMat.getImage(item.product),
-              ),
-            ),
-            SizedBox(width: AppTheme.paddingMedium),
+            SmallItemImage(item: item),
+            const SizedBox(width: AppTheme.paddingMedium),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -207,22 +196,59 @@ class ShoppingCartItemCard extends StatelessWidget {
                 ],
               ),
             ),
-            Row(
-              children: [
-                Tooltip(
-                  message: 'Ta bort',
-                  child: IconButton(
-                    icon: Icon(Icons.delete, color: Colors.grey[600]),
-                    onPressed: () => iMat.shoppingCartRemove(item),
-                  ),
-                ),
-                SizedBox(width: AppTheme.paddingTiny),
-                AddToCartButton(product: item.product),
-              ],
-            ),
+            ShoppingCartButtons(item: item),
           ],
         ),
       ),
+    );
+  }
+}
+
+class SmallItemImage extends StatelessWidget {
+  const SmallItemImage({super.key, required this.item});
+
+  final ShoppingItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    var iMat = Provider.of<ImatDataHandler>(context, listen: true);
+
+    return Container(
+      width: 80,
+      height: 80,
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: iMat.getImage(item.product),
+      ),
+    );
+  }
+}
+
+class ShoppingCartButtons extends StatelessWidget {
+  const ShoppingCartButtons({super.key, required this.item});
+
+  final ShoppingItem item;
+
+  @override
+  Widget build(BuildContext context) {
+    var iMat = Provider.of<ImatDataHandler>(context, listen: true);
+
+    return Row(
+      children: [
+        Tooltip(
+          message: 'Ta bort',
+          child: IconButton(
+            icon: Icon(Icons.delete, color: Colors.grey[600]),
+            onPressed: () => iMat.shoppingCartRemove(item),
+          ),
+        ),
+        SizedBox(width: AppTheme.paddingTiny),
+        AddToCartButton(product: item.product),
+      ],
     );
   }
 }

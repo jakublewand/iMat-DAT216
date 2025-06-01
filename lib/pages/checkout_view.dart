@@ -22,7 +22,7 @@ class CheckoutView extends StatelessWidget {
             children: [
               IconButton(
                 icon: Icon(Icons.arrow_back),
-                onPressed: () => GoRouter.of(context).pop(),
+                onPressed: () => context.go(AppRoutes.home),
               ),
               Text(
                 'Ordersammanfattning',

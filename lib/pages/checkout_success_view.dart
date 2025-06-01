@@ -64,7 +64,7 @@ class CheckoutSuccessView extends StatelessWidget {
         ),
         ElevatedButton(
           onPressed: () {
-            context.push(AppRoutes.history);
+            context.go(AppRoutes.history);
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppTheme.secondaryColor,

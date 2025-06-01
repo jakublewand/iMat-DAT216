@@ -63,7 +63,7 @@ class _AppNavbarState extends State<AppNavbar> {
               ).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
-          SizedBox(width: AppTheme.paddingLarge),
+          const SizedBox(width: AppTheme.paddingLarge),
           Expanded(
             child: Container(
               decoration: BoxDecoration(
@@ -75,7 +75,7 @@ class _AppNavbarState extends State<AppNavbar> {
                 textAlignVertical: TextAlignVertical.center,
                 decoration: InputDecoration(
                   hintText: 'Sök',
-                  prefixIcon: Icon(Icons.search),
+                  prefixIcon: const Icon(Icons.search),
                   // Workaround to make it vertically centered
                   border: InputBorder.none,
                 ),
@@ -85,7 +85,7 @@ class _AppNavbarState extends State<AppNavbar> {
               ),
             ),
           ),
-          SizedBox(width: AppTheme.paddingLarge),
+          const SizedBox(width: AppTheme.paddingLarge),
           ...iMat.isLoggedIn
               ? _loggedInButtons(context, iMat)
               : _loggedOutButtons(context),
@@ -97,40 +97,40 @@ class _AppNavbarState extends State<AppNavbar> {
   List<Widget> _loggedInButtons(BuildContext context, ImatDataHandler iMat) {
     return [
       ElevatedButton(
-        onPressed: () => context.push(AppRoutes.history),
+        onPressed: () => context.go(AppRoutes.history),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,
           elevation: 2,
-          side: BorderSide(
+          side: const BorderSide(
             color: Colors.black,
             width: 1,
           ),
         ),
         child: Text('Köphistorik'),
       ),
-      SizedBox(width: 8),
+      const SizedBox(width: 8),
       ElevatedButton(
-        onPressed: () => context.push(AppRoutes.account),
+        onPressed: () => context.go(AppRoutes.account),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,
           elevation: 2,
-          side: BorderSide(
+          side: const BorderSide(
             color: Colors.black,
             width: 1,
           ),
         ),
         child: Text('Min profil'),
       ),
-      SizedBox(width: 8),
+      const SizedBox(width: 8),
       ElevatedButton(
         onPressed: () => _logout(context, iMat),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,
           elevation: 2,
-          side: BorderSide(
+          side: const BorderSide(
             color: Colors.black,
             width: 1,
           ),
@@ -143,26 +143,26 @@ class _AppNavbarState extends State<AppNavbar> {
   List<Widget> _loggedOutButtons(BuildContext context) {
     return [
       ElevatedButton(
-        onPressed: () => context.push(AppRoutes.login),
+        onPressed: () => context.go(AppRoutes.login),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,
           elevation: 2,
-          side: BorderSide(
+          side: const BorderSide(
             color: Colors.black,
             width: 1,
           ),
         ),
         child: Text('Logga in'),
       ),
-      SizedBox(width: 8),
+      const SizedBox(width: 8),
       ElevatedButton(
-        onPressed: () => context.push(AppRoutes.signup),
+        onPressed: () => context.go(AppRoutes.signup),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppTheme.primaryColor,
           foregroundColor: Colors.black,
           elevation: 2,
-          side: BorderSide(
+          side: const BorderSide(
             color: Colors.black,
             width: 1,
           ),

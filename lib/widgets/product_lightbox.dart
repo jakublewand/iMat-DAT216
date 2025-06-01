@@ -209,7 +209,7 @@ class _SimilarProductCard extends StatelessWidget {
       child: InkWell(
         onTap: () {
           // Navigera direkt till ny produkt med go_router
-          context.push(AppRoutes.productWithId(product.productId));
+          context.go(AppRoutes.productWithId(product.productId));
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
