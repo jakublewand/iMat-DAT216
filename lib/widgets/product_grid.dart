@@ -30,7 +30,7 @@ class ProductGrid extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: AppTheme.paddingMedium),
       sliver: SliverGrid.builder(
         gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 300,
+          maxCrossAxisExtent: 350,
           mainAxisExtent: 280,
           crossAxisSpacing: AppTheme.paddingMedium,
           mainAxisSpacing: AppTheme.paddingMedium,
@@ -66,7 +66,7 @@ class ProductCard extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Padding(
-                padding: EdgeInsets.all(AppTheme.paddingSmall),
+                padding: EdgeInsets.symmetric(horizontal: AppTheme.paddingSmall),
                 child: ProductText(product: product),
               ),
             ),
@@ -103,14 +103,15 @@ class ProductText extends StatelessWidget {
               ProductBadges(product: product),
             ],
           ),
-          SizedBox(height: AppTheme.paddingSmall),
           Row(
             children: [
-              Text(
-                product.priceString,
-                style: Theme.of(context).textTheme.bodyLarge,
+              Expanded(
+                child: Text(
+                  product.priceString,
+                  maxLines: 2,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
               ),
-              Spacer(),
               AddToCartButton(product: product),
             ],
           ),

@@ -44,7 +44,7 @@ class AppRoutes {
                     name: 'product',
                     pageBuilder: (context, state) {
                       final id = int.parse(state.pathParameters['id']!);
-                      return ProductModalPage(productId: id, key: UniqueKey());
+                      return ProductModalPage(productId: id, key: state.pageKey);
                     },
                   ),
                 ],
