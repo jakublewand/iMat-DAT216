@@ -17,6 +17,28 @@ class CheckoutView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ImatDataHandler>(
       builder: (context, iMat, child) {
+        // Wait for initialization to complete before checking login status
+        if (!iMat.isInitialized) {
+          return PageScaffold(
+            backgroundColor: Colors.brown[50],
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Laddar...',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
         // Check if user is logged in, if not redirect to login
         if (!iMat.isLoggedIn) {
           WidgetsBinding.instance.addPostFrameCallback((_) {

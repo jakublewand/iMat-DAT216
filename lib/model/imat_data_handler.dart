@@ -25,6 +25,7 @@ class ImatDataHandler extends ChangeNotifier {
 
   // Login state management
   bool _isLoggedIn = false;
+  bool _isInitialized = false; // Track if initial loading is complete
   static const String _loginKey = 'loggedIn';
 
   // Never changing, only loaded on startup
@@ -34,6 +35,9 @@ class ImatDataHandler extends ChangeNotifier {
 
   // Access a list of all previous orders
   List<Order> get orders => _orders;
+
+  // Check if the data handler has finished initial loading
+  bool get isInitialized => _isInitialized;
 
   //
   // Handle product filtering
@@ -308,6 +312,12 @@ class ImatDataHandler extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_loginKey, loggedIn);
     _isLoggedIn = loggedIn;
+    
+    // Ensure initialized flag is set (in case login happens before setup is complete)
+    if (!_isInitialized) {
+      _isInitialized = true;
+    }
+    
     notifyListeners();
   }
 
@@ -810,11 +820,6 @@ import 'package:http/http.dart' as http;
       _favorites[product.productId] = product;
     }
 
-    notifyListeners();
-
-    // Preload images for the first few products to improve initial loading experience
-    preloadInitialImages();
-
     // Only fetch user data if logged in
     if (_isLoggedIn) {
       // Fetching CreditCard, Customer & User
@@ -858,6 +863,9 @@ import 'package:http/http.dart' as http;
       _extras = {};
     }
 
+    // Mark as initialized after all loading is complete
+    _isInitialized = true;
+
     /* Testcode
 
     print('New extras $_extras');
@@ -875,5 +883,8 @@ import 'package:http/http.dart' as http;
      */
 
     notifyListeners();
+
+    // Preload images for the first few products to improve initial loading experience
+    preloadInitialImages();
   }
 }
