@@ -261,6 +261,7 @@ class EcoIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Tooltip(
+      preferBelow: false,
       message: 'Ekologisk produkt',
       child: Container(
         padding: EdgeInsets.all(3),
@@ -280,6 +281,7 @@ class FavoriteIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Tooltip(
+      preferBelow: false,
       message: 'Favorit',
       child: Container(
         padding: EdgeInsets.all(3),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
-import 'package:imat/widgets/custom_text_field.dart';
+import 'package:imat/widgets/custom_components.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/routes.dart';
 import 'package:provider/provider.dart';
@@ -109,7 +109,9 @@ class _LoginViewState extends State<LoginView> {
                           ),
                           const SizedBox(height: AppTheme.paddingMedium),
                           
-                          CustomPasswordField(
+                          CustomTextField(
+                            obscureText: true,
+                            icon: Icons.lock,
                             controller: _passwordController,
                             label: 'Lösenord',
                             hintText: 'Skriv ditt lösenord här...',
@@ -123,58 +125,13 @@ class _LoginViewState extends State<LoginView> {
                           const SizedBox(height: AppTheme.paddingLarge),
                           
                           // Login button
-                          Container(
+                          CustomButton(
+                            text: _isLoading ? 'Loggar in...' : 'Logga in',
+                            icon: Icons.login,
+                            onPressed: _isLoading ? null : _performLogin,
+                            isLoading: _isLoading,
+                            loadingText: 'Loggar in...',
                             width: double.infinity,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  AppTheme.accentColor,
-                                  AppTheme.accentColor.withOpacity(0.8),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppTheme.accentColor.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton.icon(
-                              onPressed: _isLoading ? null : _performLogin,
-                              icon: _isLoading
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  : const Icon(
-                                      Icons.login,
-                                      color: Colors.white,
-                                    ),
-                              label: Text(
-                                _isLoading ? 'Loggar in...' : 'Logga in',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
                           ),
                           const SizedBox(height: AppTheme.paddingMedium),
                           
@@ -213,7 +170,7 @@ class _LoginViewState extends State<LoginView> {
       try {
         final imatDataHandler = Provider.of<ImatDataHandler>(
           context,
-          listen: true,
+          listen: false,
         );
 
         bool loginSuccessful = await imatDataHandler.login(

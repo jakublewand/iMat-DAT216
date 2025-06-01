@@ -6,7 +6,7 @@ import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/customer.dart';
 import 'package:imat/model/imat/user.dart';
 import 'package:imat/model/imat_data_handler.dart';
-import 'package:imat/widgets/custom_text_field.dart';
+import 'package:imat/widgets/custom_components.dart';
 import 'package:imat/widgets/page_scaffold.dart';
 import 'package:go_router/go_router.dart';
 
@@ -152,9 +152,11 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                           const SizedBox(height: AppTheme.paddingMedium),
 
-                          CustomPasswordField(
+                          CustomTextField(
                             controller: _passwordController,
                             label: 'Lösenord',
+                            icon: Icons.lock,
+                            obscureText: true,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Vänligen ange ett lösenord';
@@ -167,9 +169,11 @@ class _SignUpViewState extends State<SignUpView> {
                           ),
                           const SizedBox(height: AppTheme.paddingMedium),
 
-                          CustomPasswordField(
+                          CustomTextField(
                             controller: _confirmPasswordController,
                             label: 'Bekräfta lösenord',
+                            icon: Icons.lock,
+                            obscureText: true,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Vänligen bekräfta ditt lösenord';
@@ -235,59 +239,13 @@ class _SignUpViewState extends State<SignUpView> {
                           const SizedBox(height: AppTheme.paddingLarge),
 
                           // Register button
-                          Container(
+                          CustomButton(
+                            text: _isLoading ? 'Registrerar...' : 'Skapa konto',
+                            icon: Icons.person_add,
+                            onPressed: _isLoading ? null : _registerCustomer,
+                            isLoading: _isLoading,
+                            loadingText: 'Registrerar...',
                             width: double.infinity,
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  AppTheme.accentColor,
-                                  AppTheme.accentColor.withOpacity(0.8),
-                                ],
-                              ),
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppTheme.accentColor.withOpacity(0.3),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ),
-                            child: ElevatedButton.icon(
-                              onPressed: _isLoading ? null : _registerCustomer,
-                              icon:
-                                  _isLoading
-                                      ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                      : const Icon(
-                                        Icons.person_add,
-                                        color: Colors.white,
-                                      ),
-                              label: Text(
-                                _isLoading ? 'Registrerar...' : 'Skapa konto',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 16,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.transparent,
-                                shadowColor: Colors.transparent,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            ),
                           ),
                           const SizedBox(height: AppTheme.paddingMedium),
 
@@ -324,7 +282,7 @@ class _SignUpViewState extends State<SignUpView> {
       try {
         final imatDataHandler = Provider.of<ImatDataHandler>(
           context,
-          listen: true,
+          listen: false,
         );
 
         // Create new customer with form data

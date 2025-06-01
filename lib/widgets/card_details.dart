@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:imat/app_theme.dart';
+import 'package:imat/widgets/custom_components.dart';
 
 // Custom formatter for MM/YY expiry date
 class ExpiryDateFormatter extends TextInputFormatter {
@@ -42,7 +43,9 @@ class ExpiryDateFormatter extends TextInputFormatter {
 // Simple widget to edit card information.
 // It's probably better to use Form
 class CardDetails extends StatefulWidget {
-  const CardDetails({super.key});
+  final bool showSaveButton;
+  
+  const CardDetails({super.key, this.showSaveButton = true});
 
   @override
   State<CardDetails> createState() => _CardDetailsState();
@@ -301,31 +304,13 @@ class _CardDetailsState extends State<CardDetails> {
                 ],
               ),
               const SizedBox(height: 32),
-              Container(
-                decoration: BoxDecoration(
-                  color: AppTheme.accentColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ElevatedButton.icon(
+              if (widget.showSaveButton)
+                CustomButton(
+                  text: 'Spara kort',
+                  icon: Icons.save,
                   onPressed: _saveCard,
-                  icon: const Icon(Icons.save, color: Colors.white),
-                  label: const Text(
-                    'Spara kort',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                  width: double.infinity,
                 ),
-              ),
             ],
           ),
         );

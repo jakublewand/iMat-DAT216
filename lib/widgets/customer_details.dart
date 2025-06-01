@@ -1,14 +1,20 @@
+import 'package:flutter/material.dart';
 import 'package:imat/model/imat/customer.dart';
 import 'package:imat/model/imat_data_handler.dart';
-import 'package:flutter/material.dart';
+import 'package:imat/widgets/custom_components.dart';
 import 'package:provider/provider.dart';
-import 'package:imat/app_theme.dart';
-
 
 // Simple widget to edit card information.
 // It's probably better to use Form
 class CustomerDetails extends StatefulWidget {
-  const CustomerDetails({super.key});
+  final bool showSaveButton;
+  final bool enableEmailEditing;
+
+  const CustomerDetails({
+    super.key,
+    this.showSaveButton = true,
+    this.enableEmailEditing = true,
+  });
 
   @override
   State<CustomerDetails> createState() => _CustomerDetailsState();
@@ -53,7 +59,10 @@ class _CustomerDetailsState extends State<CustomerDetails> {
 
   void _loadCustomerData(Customer customer) {
     // Check if this is real data (not just empty defaults) and we haven't loaded yet
-    if (!_hasLoadedData && (customer.firstName.isNotEmpty || customer.lastName.isNotEmpty || customer.email.isNotEmpty)) {
+    if (!_hasLoadedData &&
+        (customer.firstName.isNotEmpty ||
+            customer.lastName.isNotEmpty ||
+            customer.email.isNotEmpty)) {
       _firstNameController.text = customer.firstName;
       _lastNameController.text = customer.lastName;
       _mobileNumberController.text = customer.mobilePhoneNumber;
@@ -72,38 +81,16 @@ class _CustomerDetailsState extends State<CustomerDetails> {
         // Load data when it becomes available
         Customer customer = iMat.getCustomer();
         _loadCustomerData(customer);
-        
+
         return Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
+              CustomTextField(
                 controller: _firstNameController,
-                decoration: InputDecoration(
-                  labelText: 'Förnamn',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppTheme.accentColor, width: 2),
-                  ),
-                  prefixIcon: Container(
-                    margin: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.person, color: AppTheme.secondaryColor),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                ),
+                label: 'Förnamn',
+                icon: Icons.person,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Vänligen ange ditt förnamn';
@@ -112,32 +99,10 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                 },
               ),
               const SizedBox(height: 16),
-              TextFormField(
+              CustomTextField(
                 controller: _lastNameController,
-                decoration: InputDecoration(
-                  labelText: 'Efternamn',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppTheme.accentColor, width: 2),
-                  ),
-                  prefixIcon: Container(
-                    margin: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.person_outline, color: AppTheme.secondaryColor),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                ),
+                label: 'Efternamn',
+                icon: Icons.person_outline,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Vänligen ange ditt efternamn';
@@ -146,32 +111,10 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                 },
               ),
               const SizedBox(height: 16),
-              TextFormField(
+              CustomTextField(
                 controller: _mobileNumberController,
-                decoration: InputDecoration(
-                  labelText: 'Mobilnummer',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppTheme.accentColor, width: 2),
-                  ),
-                  prefixIcon: Container(
-                    margin: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.phone_android, color: AppTheme.secondaryColor),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                ),
+                label: 'Mobilnummer',
+                icon: Icons.phone_android,
                 keyboardType: TextInputType.phone,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -181,70 +124,47 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                 },
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  labelText: 'E-post',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppTheme.accentColor, width: 2),
-                  ),
-                  prefixIcon: Container(
-                    margin: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
+              Tooltip(
+                message:
+                    widget.enableEmailEditing
+                        ? 'E-post kan ändras här'
+                        : 'E-post kan endast ändras i profilen',
+                child: Stack(
+                  children: [
+                    CustomTextField(
+                      controller: _emailController,
+                      label: 'E-post',
+                      icon: Icons.email,
+                      keyboardType: TextInputType.emailAddress,
+                      enabled: widget.enableEmailEditing,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Vänligen ange din e-postadress';
+                        }
+                        if (!value.contains('@')) {
+                          return 'Vänligen ange en giltig e-postadress';
+                        }
+                        return null;
+                      },
                     ),
-                    child: const Icon(Icons.email, color: AppTheme.secondaryColor),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
+                    if (!widget.enableEmailEditing)
+                      Positioned(
+                        right: 12,
+                        top: 12,
+                        child: Icon(
+                          Icons.lock,
+                          color: Colors.grey[400],
+                          size: 20,
+                        ),
+                      ),
+                  ],
                 ),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Vänligen ange din e-postadress';
-                  }
-                  if (!value.contains('@')) {
-                    return 'Vänligen ange en giltig e-postadress';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 16),
-              TextFormField(
+              CustomTextField(
                 controller: _addressController,
-                decoration: InputDecoration(
-                  labelText: 'Adress',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: Colors.grey[300]!),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide(color: AppTheme.accentColor, width: 2),
-                  ),
-                  prefixIcon: Container(
-                    margin: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.home, color: AppTheme.secondaryColor),
-                  ),
-                  filled: true,
-                  fillColor: Colors.grey[50],
-                ),
+                label: 'Adress',
+                icon: Icons.home,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Vänligen ange din adress';
@@ -257,32 +177,10 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                 children: [
                   Expanded(
                     flex: 2,
-                    child: TextFormField(
+                    child: CustomTextField(
                       controller: _postCodeController,
-                      decoration: InputDecoration(
-                        labelText: 'Postnummer',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppTheme.accentColor, width: 2),
-                        ),
-                        prefixIcon: Container(
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(Icons.local_post_office, color: AppTheme.secondaryColor),
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[50],
-                      ),
+                      label: 'Postnummer',
+                      icon: Icons.local_post_office,
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -295,32 +193,10 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 3,
-                    child: TextFormField(
+                    child: CustomTextField(
                       controller: _postAddressController,
-                      decoration: InputDecoration(
-                        labelText: 'Ort',
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppTheme.accentColor, width: 2),
-                        ),
-                        prefixIcon: Container(
-                          margin: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: const Icon(Icons.location_city, color: AppTheme.secondaryColor),
-                        ),
-                        filled: true,
-                        fillColor: Colors.grey[50],
-                      ),
+                      label: 'Ort',
+                      icon: Icons.location_city,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Vänligen ange ort';
@@ -331,32 +207,15 @@ class _CustomerDetailsState extends State<CustomerDetails> {
                   ),
                 ],
               ),
-              const SizedBox(height: 32),
-              Container(
-                decoration: BoxDecoration(
-                  color: AppTheme.accentColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ElevatedButton.icon(
+              if (widget.showSaveButton) ...[
+                const SizedBox(height: 32),
+                CustomButton(
+                  text: 'Spara uppgifter',
+                  icon: Icons.save,
                   onPressed: _saveCustomer,
-                  icon: const Icon(Icons.save, color: Colors.white),
-                  label: const Text(
-                    'Spara uppgifter',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                    ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.transparent,
-                    shadowColor: Colors.transparent,
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                  width: double.infinity,
                 ),
-              ),
+              ],
             ],
           ),
         );
@@ -366,7 +225,10 @@ class _CustomerDetailsState extends State<CustomerDetails> {
 
   void _saveCustomer() {
     if (_formKey.currentState!.validate()) {
-      var imatDataHandler = Provider.of<ImatDataHandler>(context, listen: false);
+      var imatDataHandler = Provider.of<ImatDataHandler>(
+        context,
+        listen: false,
+      );
       Customer customer = imatDataHandler.getCustomer();
 
       customer.firstName = _firstNameController.text;
@@ -378,7 +240,7 @@ class _CustomerDetailsState extends State<CustomerDetails> {
       customer.postAddress = _postAddressController.text;
 
       imatDataHandler.setCustomer(customer);
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Kunduppgifter sparade'),

@@ -6,6 +6,7 @@ import 'package:imat/app_theme.dart';
 import 'package:imat/model/imat/shopping_item.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/routes.dart';
+import 'package:imat/widgets/custom_components.dart';
 import 'package:imat/widgets/product_grid.dart';
 import 'package:provider/provider.dart';
 
@@ -140,21 +141,15 @@ class ShoppingCart extends StatelessWidget {
             padding: EdgeInsets.all(AppTheme.paddingMedium),
             child: Consumer<ImatDataHandler>(
               builder: (context, iMat, child) {
-                return ElevatedButton(
+                return CustomButton(
                   onPressed:
                       iMat.shoppingCartTotal() > 0
                           ? () {
                             context.go(AppRoutes.checkout);
                           }
                           : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.secondaryColor,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: Text('Till kassan'),
+                  text: 'Till kassan',
+                  icon: Icons.shopping_cart,
                 );
               },
             ),

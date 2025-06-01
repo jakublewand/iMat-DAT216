@@ -2,26 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:imat/app_theme.dart';
 
 class CustomTextField extends StatelessWidget {
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final String label;
+  final String? hintText;
   final IconData icon;
+  final bool obscureText;
   final TextInputType? keyboardType;
   final String? Function(String?)? validator;
-  final bool obscureText;
-  final Widget? suffixIcon;
-  final String? hintText;
+  final VoidCallback? onTap;
   final bool enabled;
 
   const CustomTextField({
     super.key,
-    required this.controller,
+    this.controller,
     required this.label,
+    this.hintText,
     required this.icon,
+    this.obscureText = false,
     this.keyboardType,
     this.validator,
-    this.obscureText = false,
-    this.suffixIcon,
-    this.hintText,
+    this.onTap,
     this.enabled = true,
   });
 
@@ -29,17 +29,25 @@ class CustomTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
-      keyboardType: keyboardType,
       obscureText: obscureText,
+      keyboardType: keyboardType,
+      validator: validator,
+      onTap: onTap,
+      cursorColor: Colors.black,
       enabled: enabled,
       decoration: InputDecoration(
         labelText: label,
-        hintText: hintText,
         labelStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
           color: AppTheme.secondaryColor,
         ),
-        hintStyle: TextStyle(
-          color: Colors.grey[400],
+        hintText: hintText,
+        prefixIcon: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: AppTheme.secondaryColor),
         ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
@@ -50,83 +58,83 @@ class CustomTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.accentColor, width: 2),
+          borderSide: BorderSide(color: AppTheme.secondaryColor, width: 2),
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
-        disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey[300]!),
-        ),
-        prefixIcon: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppTheme.primaryColor.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: AppTheme.secondaryColor),
-        ),
-        suffixIcon: suffixIcon,
         filled: true,
         fillColor: enabled ? Colors.grey[50] : Colors.grey[100],
       ),
-      validator: validator,
-      cursorColor: AppTheme.secondaryColor,
     );
   }
 }
 
-class CustomPasswordField extends StatefulWidget {
-  final TextEditingController controller;
-  final String label;
-  final String? Function(String?)? validator;
-  final String? hintText;
-  final bool enabled;
+class CustomButton extends StatelessWidget {
+  final String text;
+  final IconData icon;
+  final VoidCallback? onPressed;
+  final bool isLoading;
+  final Color? backgroundColor;
+  final Color? textColor;
+  final double? width;
+  final EdgeInsetsGeometry? padding;
+  final String? loadingText;
 
-  const CustomPasswordField({
+  const CustomButton({
     super.key,
-    required this.controller,
-    required this.label,
-    this.validator,
-    this.hintText,
-    this.enabled = true,
+    required this.text,
+    required this.icon,
+    this.onPressed,
+    this.isLoading = false,
+    this.backgroundColor,
+    this.textColor,
+    this.width,
+    this.padding,
+    this.loadingText,
   });
 
   @override
-  State<CustomPasswordField> createState() => _CustomPasswordFieldState();
-}
-
-class _CustomPasswordFieldState extends State<CustomPasswordField> {
-  bool _isPasswordVisible = false;
-
-  @override
   Widget build(BuildContext context) {
-    return CustomTextField(
-      controller: widget.controller,
-      label: widget.label,
-      icon: Icons.lock,
-      keyboardType: TextInputType.visiblePassword,
-      obscureText: !_isPasswordVisible,
-      hintText: widget.hintText,
-      enabled: widget.enabled,
-      suffixIcon: IconButton(
-        icon: Icon(
-          _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-          color: AppTheme.secondaryColor,
-        ),
-        onPressed: () {
-          setState(() {
-            _isPasswordVisible = !_isPasswordVisible;
-          });
-        },
+    final bool isDisabled = onPressed == null && !isLoading;
+    final effectiveBackgroundColor = isDisabled 
+        ? Colors.grey[300]
+        : backgroundColor ?? AppTheme.accentColor;
+    final effectiveTextColor = isDisabled 
+        ? Colors.grey[600]
+        : textColor ?? Colors.white;
+    
+    return Container(
+      width: width,
+      decoration: BoxDecoration(
+        color: effectiveBackgroundColor,
+        borderRadius: BorderRadius.circular(12),
       ),
-      validator: widget.validator,
+      child: ElevatedButton.icon(
+        onPressed: isLoading ? null : onPressed,
+        icon: isLoading
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: effectiveTextColor,
+                ),
+              )
+            : Icon(icon, color: effectiveTextColor),
+        label: Text(
+          isLoading ? (loadingText ?? text) : text,
+          style: TextStyle(
+            color: effectiveTextColor,
+            fontSize: 16,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          padding: padding ?? const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
     );
   }
 } 
