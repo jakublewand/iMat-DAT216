@@ -21,7 +21,7 @@ class AppRoutes {
   static const String account = '/account';
   static const String history = '/history';
   static const String product = '/product';
-  
+
   // Helper method för produktroute med id
   static String productWithId(int productId) => '/product/$productId';
 
@@ -44,7 +44,7 @@ class AppRoutes {
                     name: 'product',
                     pageBuilder: (context, state) {
                       final id = int.parse(state.pathParameters['id']!);
-                      return ProductModalPage(productId: id, key: state.pageKey);
+                      return ProductModalPage(productId: id, key: UniqueKey());
                     },
                   ),
                 ],
@@ -89,7 +89,7 @@ class AppRoutes {
 
 class ProductModalPage extends Page {
   final int productId;
-  
+
   const ProductModalPage({required this.productId, super.key});
 
   @override
@@ -98,13 +98,14 @@ class ProductModalPage extends Page {
       settings: this,
       builder: (context) {
         // Fix from GitHub issue #150291 by chunhtai - get fresh settings reference
-        final currentPage = ModalRoute.of(context)?.settings as ProductModalPage?;
-        
+        final currentPage =
+            ModalRoute.of(context)?.settings as ProductModalPage?;
+
         return Consumer<ImatDataHandler>(
           builder: (context, iMat, child) {
             // Use the current page's productId to ensure fresh data
             final id = currentPage?.productId ?? productId;
-            
+
             // Check if products are still loading
             if (iMat.products.isEmpty) {
               // Products are still loading, show loading indicator
@@ -114,33 +115,23 @@ class ProductModalPage extends Page {
                   color: Colors.white,
                   borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
                 ),
-                child: const Center(
-                  child: CircularProgressIndicator(),
-                ),
+                child: const Center(child: CircularProgressIndicator()),
               );
             }
-            
+
             final product = iMat.getProduct(id);
-            
-            if (product == null) {
-              // Product not found after products loaded, redirect to home
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (context.mounted) {
-                  context.go(AppRoutes.home);
-                }
-              });
-              return const SizedBox.shrink();
-            }
-            
+
             return ProductLightbox(product: product);
           },
         );
       },
-      constraints: const BoxConstraints(maxWidth: 1000),
+      constraints: BoxConstraints(
+        maxWidth: 1000,
+        maxHeight: MediaQuery.of(context).size.height - 64,
+      ),
       isScrollControlled: true,
-      isDismissible: true,
       enableDrag: true,
       anchorPoint: const Offset(0, 0),
     );
   }
-} 
+}

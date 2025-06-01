@@ -11,12 +11,36 @@ import 'package:go_router/go_router.dart';
 class ProductLightbox extends StatelessWidget {
   const ProductLightbox({required this.product, super.key});
 
-  final Product product;
+  final Product? product;
 
   @override
   Widget build(BuildContext context) {
     var iMat = Provider.of<ImatDataHandler>(context, listen: false);
-    ProductDetail? detail = iMat.getDetail(product);
+
+    if (product == null) {
+      return Container(
+        padding: EdgeInsets.all(AppTheme.paddingHuge),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Produkten finns inte', style: Theme.of(context).textTheme.headlineLarge),
+              SizedBox(height: AppTheme.paddingHuge),
+              ElevatedButton(
+                onPressed: () => context.go(AppRoutes.home),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.secondaryColor,
+                  foregroundColor: Colors.white,
+                ),
+                child: Text('Stäng'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    ProductDetail? detail = iMat.getDetail(product!);
 
     return Container(
       padding: EdgeInsets.all(AppTheme.paddingHuge).copyWith(bottom: 0),
@@ -76,7 +100,7 @@ class ProductLightbox extends StatelessWidget {
             height: 320,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              child: iMat.getImage(product),
+              child: iMat.getImage(product!),
             ),
           ),
           SizedBox(width: AppTheme.paddingHuge),
@@ -89,14 +113,14 @@ class ProductLightbox extends StatelessWidget {
                 // Product price and unit
                 Row(
                   children: [
-                    Text(product.name, style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold)),
+                    Text(product!.name, style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold)),
                     SizedBox(width: AppTheme.paddingSmall),
-                    ProductBadges(product: product),
+                    ProductBadges(product: product!),
                   ],
                 ),
                 SizedBox(height: AppTheme.paddingSmall),
                 Text(
-                  '${product.price.toStringAsFixed(2)} ${product.unit}',
+                  '${product!.price.toStringAsFixed(2)} ${product!.unit}',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: AppTheme.paddingSmall),
@@ -138,19 +162,19 @@ class ProductLightbox extends StatelessWidget {
                   SizedBox(height: AppTheme.paddingSmall),
                   Row(
                     children: [
-                      AddToCartButton(product: product),
+                      AddToCartButton(product: product!),
                       SizedBox(width: AppTheme.paddingMedium),
                       OutlinedButton.icon(
                         onPressed: () {
-                          iMat.toggleFavorite(product);
+                          iMat.toggleFavorite(product!);
                         },
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Colors.black,
                         ),
-                        icon: iMat.isFavorite(product)
+                        icon: iMat.isFavorite(product!)
                             ? Icon(Icons.star, color: Colors.amber[800])
                             : Icon(Icons.star_border, color: Colors.grey[600]),
-                        label: iMat.isFavorite(product)
+                        label: iMat.isFavorite(product!)
                             ? Text('Ta bort favorit')
                             : Text('Lägg till favorit'),
                       ),
@@ -168,7 +192,7 @@ class ProductLightbox extends StatelessWidget {
   Widget _similarProductsSection(BuildContext context, ImatDataHandler iMat) {
     // Get 3 random products or first 3 products (excluding current product)
     final allProducts =
-        iMat.products.where((p) => p.productId != product.productId).toList();
+        iMat.products.where((p) => p.productId != product!.productId).toList();
     final similarProducts = allProducts.take(6).toList();
 
     return Column(
