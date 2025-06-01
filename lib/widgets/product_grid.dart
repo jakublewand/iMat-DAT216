@@ -5,6 +5,7 @@ import 'package:imat/model/imat/product.dart';
 import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/model/imat/shopping_item.dart';
 import 'package:imat/routes.dart';
+import 'package:imat/widgets/sale_banner.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -59,17 +60,23 @@ class ProductCard extends StatelessWidget {
         onTap: () {
           context.go(AppRoutes.productWithId(product.productId));
         },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Stack(
           children: [
-            Expanded(flex: 3, child: ProductImage(product: product)),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: AppTheme.paddingSmall),
-                child: ProductText(product: product),
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(flex: 3, child: ProductImage(product: product)),
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: AppTheme.paddingSmall),
+                    child: ProductText(product: product),
+                  ),
+                ),
+              ],
             ),
+            // Show sale banner if product has original price
+            if (product.originalPrice != null) SaleBanner(),
           ],
         ),
       ),
@@ -106,10 +113,9 @@ class ProductText extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: Text(
-                  product.priceString,
-                  maxLines: 2,
-                  style: Theme.of(context).textTheme.bodyLarge,
+                child: SalePriceDisplay(
+                  product: product,
+                  priceStyle: Theme.of(context).textTheme.bodyLarge,
                 ),
               ),
               AddToCartButton(product: product),

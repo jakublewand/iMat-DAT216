@@ -5,6 +5,7 @@ import 'package:imat/model/imat_data_handler.dart';
 import 'package:imat/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:imat/widgets/product_grid.dart';
+import 'package:imat/widgets/sale_banner.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -98,9 +99,15 @@ class ProductLightbox extends StatelessWidget {
           SizedBox(
             width: 440,
             height: 320,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: iMat.getImage(product!),
+            child: Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: iMat.getImage(product!),
+                ),
+                // Show sale banner if product has original price
+                if (product!.originalPrice != null) SaleBanner(),
+              ],
             ),
           ),
           SizedBox(width: AppTheme.paddingHuge),
@@ -119,9 +126,9 @@ class ProductLightbox extends StatelessWidget {
                   ],
                 ),
                 SizedBox(height: AppTheme.paddingSmall),
-                Text(
-                  '${product!.price.toStringAsFixed(2)} ${product!.unit}',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
+                SalePriceDisplay(
+                  product: product!,
+                  priceStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 SizedBox(height: AppTheme.paddingSmall),
       
@@ -235,17 +242,23 @@ class _SimilarProductCard extends StatelessWidget {
           // Navigera direkt till ny produkt med go_router
           context.go(AppRoutes.productWithId(product.productId));
         },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Stack(
           children: [
-            Expanded(flex: 3, child: ProductImage(product: product)),
-            Expanded(
-              flex: 2,
-              child: Padding(
-                padding: EdgeInsets.all(AppTheme.paddingSmall),
-                child: ProductText(product: product),
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(flex: 3, child: ProductImage(product: product)),
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: EdgeInsets.all(AppTheme.paddingSmall),
+                    child: ProductText(product: product),
+                  ),
+                ),
+              ],
             ),
+            // Show sale banner if product has original price
+            if (product.originalPrice != null) SaleBanner(),
           ],
         ),
       ),
